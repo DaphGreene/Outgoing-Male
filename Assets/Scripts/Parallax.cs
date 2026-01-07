@@ -2,9 +2,14 @@
 
 public class Parallax : MonoBehaviour
 {
+    [Header("Settings")]
+    [SerializeField] private float animationSpeed = 1f;
+
+    [Header("Gameplay Gate (optional)")]
+    [SerializeField] private GameManager gameManager;
+
     private MeshRenderer meshRenderer;
-    public float animationSpeed = 1f;
-    
+
     private void Awake()
     {
         meshRenderer = GetComponent<MeshRenderer>();
@@ -12,6 +17,11 @@ public class Parallax : MonoBehaviour
 
     private void Update()
     {
-        meshRenderer.material.mainTextureOffset += new Vector2(animationSpeed * Time.deltaTime, 0);
+        // Stop parallax when not actively playing
+        if (gameManager != null && !gameManager.IsPlaying)
+            return;
+
+        meshRenderer.material.mainTextureOffset +=
+            new Vector2(animationSpeed * Time.deltaTime, 0f);
     }
 }

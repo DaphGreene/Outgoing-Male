@@ -1,14 +1,17 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Player : MonoBehaviour
 {
     private SpriteRenderer spriteRenderer;
     public Sprite[] sprites;
     private int spriteIndex;
-
     private Vector3 direction;
-    public float gravity = -9.8f;
-    public float strength = 5f;
+    public float gravity = -20f;
+    public float strength = 4f;
+    [SerializeField] private AudioClip[] flapSoundClips;
+    [SerializeField] private AudioClip deathSoundClip;
+    [SerializeField] private AudioClip scoreSoundClip;
 
     private void Awake()
     {
@@ -29,23 +32,32 @@ public class Player : MonoBehaviour
     }
 
     private void Update()
+{
+    bool pointerOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+
+    if (Input.GetKeyDown(KeyCode.Space) || (!pointerOverUI && Input.GetMouseButtonDown(0)))
     {
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) {
-            direction = Vector3.up * strength;
-        }
+        direction += Vector3.up * strength;
 
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
-
-            if (touch.phase == TouchPhase.Began) {
-                direction = Vector3.up * strength;
-            }
-        }
-
-        direction.y += gravity * Time.deltaTime;
-        transform.position += direction * Time.deltaTime;
+        AudioClip randomClip = flapSoundClips[Random.Range(0, flapSoundClips.Length)];
+        SoundFXManager.Instance.PlaySoundFXClip(randomClip, transform);
     }
+
+    if (Input.touchCount > 0)
+    {
+        Touch touch = Input.GetTouch(0);
+
+        // Note: touch UI detection is trickier; we can add it later.
+        if (touch.phase == TouchPhase.Began)
+        {
+            direction += Vector3.up * strength;
+        }
+    }
+
+    direction.y += gravity * Time.deltaTime;
+    direction.y = Mathf.Clamp(direction.y, -20f, 8f);
+    transform.position += direction * Time.deltaTime;
+}
 
     private void AnimateSprite()
     {
@@ -60,10 +72,27 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.tag == "Obstacle") {
-            FindObjectOfType<GameManager>().GameOver();
-        } else if (other.gameObject.tag == "Scoring") {
-            FindObjectOfType<GameManager>().IncreaseScore();
+        GameManager gameManager = Object.FindFirstObjectByType<GameManager>();
+
+        // 🚫 Prevent repeated triggers after GameOver
+        if (gameManager.HasGameEnded)
+            return;
+
+        if (other.CompareTag("Obstacle"))
+        {
+            gameManager.GameOver();
+
+            // Play death sound ONCE
+            SoundFXManager.Instance.PlaySoundFXClip(deathSoundClip, transform);
+        }
+        else if (other.CompareTag("Scoring"))
+        {
+            gameManager.IncreaseScore();
+
+            if (gameManager.Score == 10 || gameManager.Score % 50 == 0)
+            {
+                SoundFXManager.Instance.PlaySoundFXClip(scoreSoundClip, transform);
+            }
         }
     }
 }
