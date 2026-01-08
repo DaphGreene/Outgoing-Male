@@ -7,6 +7,7 @@ public class PauseMenuController : MonoBehaviour
     [SerializeField] private GameObject pauseMenuCanvas;   // your PauseMenu object (Canvas)
     [SerializeField] private GameObject pauseRootPanel;    // contains Resume/Options/Restart/Quit
     [SerializeField] private GameObject optionsPanel;      // options submenu inside pause
+    [SerializeField] private GameObject gameOverPanel;     // dedicated Game Over panel
     [SerializeField] private GameObject menuContainer;     // the thing you actually show/hide
 
     [Header("Scene")]
@@ -15,7 +16,11 @@ public class PauseMenuController : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameManager gameManager;
 
+    [Header("Behavior")]
+    [SerializeField] private bool openOnGameOver = true;
+
     private bool isPaused;
+    private bool gameOverShown;
 
     private void Start()
     {
@@ -28,6 +33,15 @@ public class PauseMenuController : MonoBehaviour
 
     private void Update()
     {
+        if (gameManager != null && gameManager.IsPlaying)
+            gameOverShown = false;
+
+        if (openOnGameOver && !gameOverShown && gameManager != null && gameManager.HasGameEnded)
+        {
+            gameOverShown = true;
+            Pause();
+        }
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             HandleEscape();
@@ -63,13 +77,14 @@ public class PauseMenuController : MonoBehaviour
         ShowRoot();
     }
 
-   public void Resume()
+    public void Resume()
     {
+        if (gameManager != null && gameManager.HasGameEnded)
+            return;
         isPaused = false;
         menuContainer.SetActive(false);
 
-        if (gameManager != null && gameManager.CanPause)
-            Time.timeScale = 1f;
+        Time.timeScale = 1f;
     }
 
     public void OnResumePressed() => Resume();
@@ -84,19 +99,35 @@ public class PauseMenuController : MonoBehaviour
 
     public void OnRestartPressed()
     {
-        Resume(); // important: unpause first
+        CloseMenuAndUnpause(); // important: unpause first
+        gameManager.Play(); // keep using Play() for now
+    }
+
+    public void OnTryAgainPressed()
+    {
+        CloseMenuAndUnpause(); // important: unpause first
         gameManager.Play(); // keep using Play() for now
     }
 
     public void OnQuitToMenuPressed()
     {
-        Resume(); // unpause first
+        CloseMenuAndUnpause(); // unpause first
         SceneManager.LoadScene(mainMenuSceneName);
+    }
+
+    private void CloseMenuAndUnpause()
+    {
+        isPaused = false;
+        menuContainer.SetActive(false);
+        Time.timeScale = 1f;
     }
 
     private void ShowRoot()
     {
-        if (pauseRootPanel != null) pauseRootPanel.SetActive(true);
+        bool isGameOver = gameManager != null && gameManager.HasGameEnded;
+
+        if (pauseRootPanel != null) pauseRootPanel.SetActive(!isGameOver);
         if (optionsPanel != null) optionsPanel.SetActive(false);
+        if (gameOverPanel != null) gameOverPanel.SetActive(isGameOver);
     }
 }

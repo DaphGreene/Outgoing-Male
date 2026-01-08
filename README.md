@@ -67,7 +67,7 @@ Expect frequent iteration, refactors, and experimental features as systems are b
 ## ✨ Credits
 
 Game Design & Development: **Daphne Greene**  
-Music & Creative Direction: **Daphne and The Glitches**
+Music & Creative Direction: **Daphne + The Glitches**
 
 ---
 

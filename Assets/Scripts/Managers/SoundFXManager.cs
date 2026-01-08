@@ -28,6 +28,8 @@ public class SoundFXManager : MonoBehaviour
         }
 
         Instance = this;
+        if (transform.parent != null)
+            transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
 
         if (sfxSourcePrefab == null)

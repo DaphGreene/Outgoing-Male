@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
+[RequireComponent(typeof(SpriteRenderer))]
 public class Player : MonoBehaviour
 {
     private SpriteRenderer spriteRenderer;
@@ -32,36 +33,42 @@ public class Player : MonoBehaviour
     }
 
     private void Update()
-{
-    bool pointerOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-
-    if (Input.GetKeyDown(KeyCode.Space) || (!pointerOverUI && Input.GetMouseButtonDown(0)))
     {
-        direction += Vector3.up * strength;
+        bool pointerOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
 
-        AudioClip randomClip = flapSoundClips[Random.Range(0, flapSoundClips.Length)];
-        SoundFXManager.Instance.PlaySoundFXClip(randomClip, transform);
-    }
-
-    if (Input.touchCount > 0)
-    {
-        Touch touch = Input.GetTouch(0);
-
-        // Note: touch UI detection is trickier; we can add it later.
-        if (touch.phase == TouchPhase.Began)
+        if (Input.GetKeyDown(KeyCode.Space) || (!pointerOverUI && Input.GetMouseButtonDown(0)))
         {
             direction += Vector3.up * strength;
-        }
-    }
 
-    direction.y += gravity * Time.deltaTime;
-    direction.y = Mathf.Clamp(direction.y, -20f, 8f);
-    transform.position += direction * Time.deltaTime;
-}
+            if (flapSoundClips != null && flapSoundClips.Length > 0 && SoundFXManager.Instance != null)
+            {
+                AudioClip randomClip = flapSoundClips[Random.Range(0, flapSoundClips.Length)];
+                if (randomClip != null)
+                    SoundFXManager.Instance.PlaySoundFXClip(randomClip, transform);
+            }
+        }
+
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            // Note: touch UI detection is trickier; we can add it later.
+            if (touch.phase == TouchPhase.Began)
+            {
+                direction += Vector3.up * strength;
+            }
+        }
+
+        direction.y += gravity * Time.deltaTime;
+        direction.y = Mathf.Clamp(direction.y, -20f, 8f);
+        transform.position += direction * Time.deltaTime;
+    }
 
     private void AnimateSprite()
     {
         spriteIndex++;
+
+        if (sprites == null || sprites.Length == 0) return;
 
         if (spriteIndex >= sprites.Length) {
             spriteIndex = 0;
@@ -73,6 +80,7 @@ public class Player : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         GameManager gameManager = Object.FindFirstObjectByType<GameManager>();
+        if (gameManager == null) return;
 
         // 🚫 Prevent repeated triggers after GameOver
         if (gameManager.HasGameEnded)
@@ -83,7 +91,8 @@ public class Player : MonoBehaviour
             gameManager.GameOver();
 
             // Play death sound ONCE
-            SoundFXManager.Instance.PlaySoundFXClip(deathSoundClip, transform);
+            if (deathSoundClip != null && SoundFXManager.Instance != null)
+                SoundFXManager.Instance.PlaySoundFXClip(deathSoundClip, transform);
         }
         else if (other.CompareTag("Scoring"))
         {
@@ -91,7 +100,8 @@ public class Player : MonoBehaviour
 
             if (gameManager.Score == 10 || gameManager.Score % 50 == 0)
             {
-                SoundFXManager.Instance.PlaySoundFXClip(scoreSoundClip, transform);
+                if (scoreSoundClip != null && SoundFXManager.Instance != null)
+                    SoundFXManager.Instance.PlaySoundFXClip(scoreSoundClip, transform);
             }
         }
     }
