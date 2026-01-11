@@ -89,7 +89,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Cleanup old obstacles
-        Obstacles[] obstacles = Object.FindObjectsByType<Obstacles>(FindObjectsSortMode.None);
+        Obstacle[] obstacles = Object.FindObjectsByType<Obstacle>(FindObjectsSortMode.None);
 
         for (int i = 0; i < obstacles.Length; i++)
         {

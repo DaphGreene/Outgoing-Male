@@ -51,7 +51,7 @@ public class Spawner : MonoBehaviour
         // Spawn exactly one obstacle
         GameObject obstacleRoot = Instantiate(prefab, transform.position, Quaternion.identity);
 
-        var obstacle = obstacleRoot.GetComponent<Obstacles>();
+        var obstacle = obstacleRoot.GetComponent<Obstacle>();
         if (obstacle != null)
         {
             obstacle.SetGameManager(gameManager);

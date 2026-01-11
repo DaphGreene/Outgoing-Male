@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Obstacles : MonoBehaviour
+public class Obstacle : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
 
