@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -10,6 +11,7 @@ public class GameManager : MonoBehaviour
     public bool IsPlaying => State == GameState.Playing;
     public bool HasGameEnded => State == GameState.GameOver;
     public bool CanPause => IsPlaying;
+    public event Action<GameState> OnStateChanged;
 
     [Header("References")]
     [SerializeField] private Player player;
@@ -21,6 +23,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject playButton;
     [SerializeField] private GameObject getReady;
     [SerializeField] private GameObject gameOver;
+    [SerializeField] private Text startPromptText;
 
     private int score;
     public int Score => score;
@@ -38,8 +41,8 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        // Only allow "start run" input when the start button is showing
-        if (!playButton.activeSelf) return;
+        // Only allow "start run" input when waiting to start.
+        if (State == GameState.Playing) return;
 
         // Don't treat UI clicks as gameplay input
         bool pointerOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
@@ -53,10 +56,18 @@ public class GameManager : MonoBehaviour
     private void SetReadyState()
     {
         State = GameState.Ready;
+        OnStateChanged?.Invoke(State);
 
         // UI
-        getReady.SetActive(true);
-        playButton.SetActive(true);
+        if (getReady != null)
+            getReady.SetActive(true);
+        if (startPromptText != null)
+        {
+            startPromptText.gameObject.SetActive(true);
+            UpdateStartPromptText();
+        }
+        if (playButton != null)
+            playButton.SetActive(true);
         gameOver.SetActive(false);
 
         // Gameplay
@@ -69,17 +80,26 @@ public class GameManager : MonoBehaviour
     public void Play()
     {
         State = GameState.Playing;
+        OnStateChanged?.Invoke(State);
 
         score = 0;
         scoreText.text = score.ToString();
 
         // UI
-        getReady.SetActive(false);
-        playButton.SetActive(false);
+        if (getReady != null)
+            getReady.SetActive(false);
+        if (startPromptText != null)
+            startPromptText.gameObject.SetActive(false);
+        if (playButton != null)
+            playButton.SetActive(false);
         gameOver.SetActive(false);
 
         // Gameplay
-        player.enabled = true;
+        if (player != null)
+        {
+            player.ResetState();
+            player.enabled = true;
+        }
         Time.timeScale = 1f;
 
         if (backgroundMusic != null)
@@ -89,7 +109,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Cleanup old obstacles
-        Obstacle[] obstacles = Object.FindObjectsByType<Obstacle>(FindObjectsSortMode.None);
+        Obstacle[] obstacles = UnityEngine.Object.FindObjectsByType<Obstacle>(FindObjectsSortMode.None);
 
         for (int i = 0; i < obstacles.Length; i++)
         {
@@ -100,11 +120,16 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         State = GameState.GameOver;
+        OnStateChanged?.Invoke(State);
 
         // UI
         gameOver.SetActive(true);
-        playButton.SetActive(true);
-        getReady.SetActive(false);
+        if (startPromptText != null)
+            startPromptText.gameObject.SetActive(false);
+        if (playButton != null)
+            playButton.SetActive(true);
+        if (getReady != null)
+            getReady.SetActive(false);
 
         // Gameplay
         player.enabled = false;
@@ -128,5 +153,14 @@ public class GameManager : MonoBehaviour
     private void UpdateHighScoreText()
     {
         highScoreText.text = $"High Score: {PlayerPrefs.GetInt("HighScore", 0)}";
+    }
+
+    private void UpdateStartPromptText()
+    {
+        if (startPromptText == null)
+            return;
+
+        bool isMobile = Application.isMobilePlatform || Input.touchSupported;
+        startPromptText.text = isMobile ? "Tap to Flap" : "Click or Space to Flap";
     }
 }

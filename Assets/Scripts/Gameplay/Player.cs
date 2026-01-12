@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     public Sprite[] sprites;
     private int spriteIndex;
     private Vector3 direction;
+    private Vector3 startPosition;
     public float gravity = -20f;
     public float strength = 4f;
     [SerializeField] private AudioClip[] flapSoundClips;
@@ -17,6 +18,7 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        startPosition = transform.position;
     }
 
     private void Start()
@@ -26,9 +28,12 @@ public class Player : MonoBehaviour
 
     private void OnEnable()
     {
-        Vector3 position = transform.position;
-        position.y = 0f;
-        transform.position = position;
+        ResetState();
+    }
+
+    public void ResetState()
+    {
+        transform.position = startPosition;
         direction = Vector3.zero;
     }
 

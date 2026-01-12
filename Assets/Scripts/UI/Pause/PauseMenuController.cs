@@ -31,6 +31,18 @@ public class PauseMenuController : MonoBehaviour
         ShowRoot();
     }
 
+    private void OnEnable()
+    {
+        if (gameManager != null)
+            gameManager.OnStateChanged += HandleGameStateChanged;
+    }
+
+    private void OnDisable()
+    {
+        if (gameManager != null)
+            gameManager.OnStateChanged -= HandleGameStateChanged;
+    }
+
     private void Update()
     {
         if (gameManager != null && gameManager.IsPlaying)
@@ -47,6 +59,12 @@ public class PauseMenuController : MonoBehaviour
             HandleEscape();
             Debug.Log("ESC detected");
         }
+    }
+
+    private void HandleGameStateChanged(GameManager.GameState state)
+    {
+        if (state == GameManager.GameState.Playing)
+            CloseMenuAndUnpause();
     }
 
     private void HandleEscape()
