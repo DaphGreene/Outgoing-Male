@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 332a6639a4cbc4d7c80045853e43b6cb
+guid: 342bd0f428ce1406b929a83f8d8330a4
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7465855713940309216
-    second: Ground1_0
+      213: 1767678434602318465
+    second: LogoTextOL1_sheet_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -40,9 +40,9 @@ TextureImporter:
     filterMode: 1
     aniso: 1
     mipBias: 0
-    wrapU: 0
-    wrapV: 0
-    wrapW: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 24
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Ground1_0
+      name: LogoTextOL1_sheet_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 168
-        height: 56
+        width: 86
+        height: 14
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0e48bbd473c0c9760800000000000000
-      internalID: 7465855713940309216
+      spriteID: 18af693bb2e088810800000000000000
+      internalID: 1767678434602318465
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Ground1_0: 7465855713940309216
+      LogoTextOL1_sheet_0: 1767678434602318465
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
