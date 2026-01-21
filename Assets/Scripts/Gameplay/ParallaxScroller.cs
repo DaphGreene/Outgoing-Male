@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ParallaxScroller : MonoBehaviour
 {
-    [Header("Pieces (left-to-right order)")]
+    [Header("Sprite Pieces (left-to-right order)")]
     [SerializeField] private Transform[] pieces;
 
     [Header("Scroll")]
