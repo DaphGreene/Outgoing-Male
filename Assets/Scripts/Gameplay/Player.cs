@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     private int spriteIndex;
     private Vector3 direction;
     private Vector3 startPosition;
+    private bool isFrozen;
     public float gravity = -20f;
     public float strength = 4f;
     [SerializeField] private AudioClip[] flapSoundClips;
@@ -37,8 +38,18 @@ public class Player : MonoBehaviour
         direction = Vector3.zero;
     }
 
+    public void SetFrozen(bool frozen)
+    {
+        isFrozen = frozen;
+        if (isFrozen)
+            direction = Vector3.zero;
+    }
+
     private void Update()
     {
+        if (isFrozen)
+            return;
+
         bool pointerOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
 
         if (Input.GetKeyDown(KeyCode.Space) || (!pointerOverUI && Input.GetMouseButtonDown(0)))

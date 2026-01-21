@@ -71,7 +71,8 @@ public class GameManager : MonoBehaviour
         gameOver.SetActive(false);
 
         // Gameplay
-        player.enabled = false;
+        if (player != null)
+            player.SetFrozen(true);
 
         // Music: your call. For now, leave it playing or stop it.
         // backgroundMusic.Stop();
@@ -98,7 +99,7 @@ public class GameManager : MonoBehaviour
         if (player != null)
         {
             player.ResetState();
-            player.enabled = true;
+            player.SetFrozen(false);
         }
         Time.timeScale = 1f;
 
@@ -132,7 +133,8 @@ public class GameManager : MonoBehaviour
             getReady.SetActive(false);
 
         // Gameplay
-        player.enabled = false;
+        if (player != null)
+            player.SetFrozen(true);
 
         if (backgroundMusic != null)
             backgroundMusic.Stop();
