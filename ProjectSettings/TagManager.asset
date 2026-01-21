@@ -46,6 +46,12 @@ TagManager:
   - name: Background
     uniqueID: 147037179
     locked: 0
+  - name: CloudsBack
+    uniqueID: 329971425
+    locked: 0
+  - name: CloudsFront
+    uniqueID: 2002410137
+    locked: 0
   - name: Ground
     uniqueID: 704636281
     locked: 0
@@ -54,6 +60,9 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 1510979641
+    locked: 0
+  - name: UI
+    uniqueID: 1220969291
     locked: 0
   m_RenderingLayers:
   - Default
