@@ -2,7 +2,7 @@
 
 ## 🔥 Tier 1 – Required for Public itch.io Release (v0.1)
 - [ ] Animate logo image and logo text
-- [ ] Player sprite animation should be flapping even before game starts
+- [x] Player sprite animation should be flapping even before game starts
 - [ ] Add Game Over text to game over screen
 
 ## ✨ Tier 2 – Strong Identity & UX Polish
