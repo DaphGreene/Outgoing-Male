@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject playButton;
     [SerializeField] private GameObject getReady;
     [SerializeField] private GameObject gameOver;
+    [SerializeField] private GameObject gameOverExtrude;
     [SerializeField] private Text startPromptText;
 
     private int score;
@@ -69,6 +70,8 @@ public class GameManager : MonoBehaviour
         if (playButton != null)
             playButton.SetActive(true);
         gameOver.SetActive(false);
+        if (gameOverExtrude != null)
+            gameOverExtrude.SetActive(false);
 
         // Gameplay
         if (player != null)
@@ -94,6 +97,8 @@ public class GameManager : MonoBehaviour
         if (playButton != null)
             playButton.SetActive(false);
         gameOver.SetActive(false);
+        if (gameOverExtrude != null)
+            gameOverExtrude.SetActive(false);
 
         // Gameplay
         if (player != null)
@@ -125,6 +130,8 @@ public class GameManager : MonoBehaviour
 
         // UI
         gameOver.SetActive(true);
+        if (gameOverExtrude != null)
+            gameOverExtrude.SetActive(true);
         if (startPromptText != null)
             startPromptText.gameObject.SetActive(false);
         if (playButton != null)

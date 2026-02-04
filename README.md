@@ -73,4 +73,4 @@ Music & Creative Direction: **Daphne + The Glitches**
 
 ## 📜 License
 
-TBD
+MIT License. See `LICENSE`.

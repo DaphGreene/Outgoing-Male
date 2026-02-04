@@ -7,11 +7,14 @@
 
 ## ✨ Tier 2 – Strong Identity & UX Polish
 - [ ] Create/implement sfx for hovering over/selecting buttons
-- [ ] MainMenu has its own music that will play and loop and then switch once game starts
+- [ ] Implement MainMenu music loop that will switch when the game is started
 - [ ] Add options menu to game over menu
 - [ ] Add character select option to game over menu
 - [ ] Allow for player selection of palette swap from mainmenu and pause screen
 - [ ] Add panel/sprite behind audio mixer on options/pause menu for visibility
+- [ ] Make clouds and street parallax start on game start
+- [ ] Create death animation (rapid flap + fall offscreen)
+- [ ] Add panel sprites behind menu items
 
 ## 🧩 Tier 3 – Light Progression (Optional for v0.1)
 - [ ] Add temp menu/image to Character Select screen with single blacked-out unlockable palette swap
