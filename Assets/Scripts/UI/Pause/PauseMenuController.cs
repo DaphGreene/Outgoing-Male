@@ -4,7 +4,6 @@ using UnityEngine.SceneManagement;
 public class PauseMenuController : MonoBehaviour
 {
     [Header("Panels")]
-    [SerializeField] private GameObject pauseMenuCanvas;   // your PauseMenu object (Canvas)
     [SerializeField] private GameObject pauseRootPanel;    // contains Resume/Options/Restart/Quit
     [SerializeField] private GameObject optionsPanel;      // options submenu inside pause
     [SerializeField] private GameObject gameOverPanel;     // dedicated Game Over panel
@@ -57,7 +56,6 @@ public class PauseMenuController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             HandleEscape();
-            Debug.Log("ESC detected");
         }
     }
 

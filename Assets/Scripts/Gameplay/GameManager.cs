@@ -29,19 +29,31 @@ public class GameManager : MonoBehaviour
     private int score;
     public int Score => score;
 
+    private bool hasValidReferences = true;
+
     private void Awake()
     {
+        hasValidReferences = ValidateRequiredReferences();
+        if (!hasValidReferences)
+        {
+            enabled = false;
+            return;
+        }
+
         Application.targetFrameRate = 60;
         SetReadyState();
     }
 
     private void Start()
     {
+        if (!hasValidReferences) return;
         UpdateHighScoreText();
     }
 
     private void Update()
     {
+        if (!hasValidReferences) return;
+
         // Only allow "start run" input when waiting to start.
         if (State == GameState.Playing) return;
 
@@ -56,6 +68,8 @@ public class GameManager : MonoBehaviour
 
     private void SetReadyState()
     {
+        if (!hasValidReferences) return;
+
         State = GameState.Ready;
         OnStateChanged?.Invoke(State);
 
@@ -83,6 +97,8 @@ public class GameManager : MonoBehaviour
 
     public void Play()
     {
+        if (!hasValidReferences) return;
+
         State = GameState.Playing;
         OnStateChanged?.Invoke(State);
 
@@ -125,6 +141,8 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        if (!hasValidReferences) return;
+
         State = GameState.GameOver;
         OnStateChanged?.Invoke(State);
 
@@ -149,6 +167,8 @@ public class GameManager : MonoBehaviour
 
     public void IncreaseScore()
     {
+        if (!hasValidReferences) return;
+
         score++;
         scoreText.text = score.ToString();
 
@@ -161,7 +181,33 @@ public class GameManager : MonoBehaviour
 
     private void UpdateHighScoreText()
     {
+        if (!hasValidReferences) return;
         highScoreText.text = $"High Score: {PlayerPrefs.GetInt("HighScore", 0)}";
+    }
+
+    private bool ValidateRequiredReferences()
+    {
+        bool isValid = true;
+
+        if (scoreText == null)
+        {
+            Debug.LogError("GameManager: 'scoreText' is not assigned.", this);
+            isValid = false;
+        }
+
+        if (highScoreText == null)
+        {
+            Debug.LogError("GameManager: 'highScoreText' is not assigned.", this);
+            isValid = false;
+        }
+
+        if (gameOver == null)
+        {
+            Debug.LogError("GameManager: 'gameOver' is not assigned.", this);
+            isValid = false;
+        }
+
+        return isValid;
     }
 
     private void UpdateStartPromptText()

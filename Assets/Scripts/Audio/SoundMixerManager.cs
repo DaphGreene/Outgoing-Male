@@ -44,7 +44,6 @@ public class SoundMixerManager : MonoBehaviour
 
     public void SetMusicLinear(float value01)
     {
-        Debug.Log($"SetMusicLinear called with {value01}");
         value01 = Clamp01Safe(value01);
         PlayerPrefs.SetFloat(MusicKey, value01);
         SetMixerDb(musicParam, value01);
@@ -75,4 +74,3 @@ public class SoundMixerManager : MonoBehaviour
 
     private float Clamp01Safe(float v) => Mathf.Clamp(v, 0.0001f, 1f);
 }
-

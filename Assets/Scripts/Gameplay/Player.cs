@@ -15,11 +15,18 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioClip[] flapSoundClips;
     [SerializeField] private AudioClip deathSoundClip;
     [SerializeField] private AudioClip scoreSoundClip;
+    [SerializeField] private GameManager gameManager;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         startPosition = transform.position;
+
+        if (gameManager == null)
+            gameManager = Object.FindFirstObjectByType<GameManager>();
+
+        if (gameManager == null)
+            Debug.LogError("Player: GameManager reference is missing.", this);
     }
 
     private void Start()
@@ -50,34 +57,48 @@ public class Player : MonoBehaviour
         if (isFrozen)
             return;
 
-        bool pointerOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-
-        if (Input.GetKeyDown(KeyCode.Space) || (!pointerOverUI && Input.GetMouseButtonDown(0)))
-        {
-            direction += Vector3.up * strength;
-
-            if (flapSoundClips != null && flapSoundClips.Length > 0 && SoundFXManager.Instance != null)
-            {
-                AudioClip randomClip = flapSoundClips[Random.Range(0, flapSoundClips.Length)];
-                if (randomClip != null)
-                    SoundFXManager.Instance.PlaySoundFXClip(randomClip, transform);
-            }
-        }
-
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
-
-            // Note: touch UI detection is trickier; we can add it later.
-            if (touch.phase == TouchPhase.Began)
-            {
-                direction += Vector3.up * strength;
-            }
-        }
+        if (ShouldFlapThisFrame())
+            ApplyFlap();
 
         direction.y += gravity * Time.deltaTime;
         direction.y = Mathf.Clamp(direction.y, -20f, 8f);
         transform.position += direction * Time.deltaTime;
+    }
+
+    private bool ShouldFlapThisFrame()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+            return true;
+
+        bool pointerOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        if (!pointerOverUI && Input.GetMouseButtonDown(0))
+            return true;
+
+        for (int i = 0; i < Input.touchCount; i++)
+        {
+            Touch touch = Input.GetTouch(i);
+            if (touch.phase != TouchPhase.Began)
+                continue;
+
+            bool touchOverUI = EventSystem.current != null &&
+                               EventSystem.current.IsPointerOverGameObject(touch.fingerId);
+            if (!touchOverUI)
+                return true;
+        }
+
+        return false;
+    }
+
+    private void ApplyFlap()
+    {
+        direction += Vector3.up * strength;
+
+        if (flapSoundClips != null && flapSoundClips.Length > 0 && SoundFXManager.Instance != null)
+        {
+            AudioClip randomClip = flapSoundClips[Random.Range(0, flapSoundClips.Length)];
+            if (randomClip != null)
+                SoundFXManager.Instance.PlaySoundFXClip(randomClip, transform);
+        }
     }
 
     private void AnimateSprite()
@@ -95,7 +116,6 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        GameManager gameManager = Object.FindFirstObjectByType<GameManager>();
         if (gameManager == null) return;
 
         // 🚫 Prevent repeated triggers after GameOver
