@@ -1,7 +1,8 @@
 # Outgoing Male – TODO
 
 ## 🔥 Tier 1 – Required for Public itch.io Release (v0.1)
-- [ ] Animate logo image and logo text
+- [x] Animate logo image
+- [ ] Animate logo text
 - [x] Player sprite animation should be flapping even before game starts
 - [ ] Add Game Over text to game over screen
 
@@ -22,7 +23,10 @@
 - [ ] Create custom button sprite to use across UI screens
 
 ## 🚀 Tier 4 – Post‑Launch Systems
+- [x] Create `StampDefinition` and `StampCatalog` data scripts
+- [x] Create initial stamp data assets and stamp catalog entries
 - [ ] Implement collectible stamp mechanic using stamp sprites available, test
+- [ ] Create `StampPickup` prefab/component and hook into gameplay spawn/collection flow
 - [ ] Add stamp collection sfx
 
 ## 🎨 Tier 5 – Visual Polish / Nice‑to‑Have
