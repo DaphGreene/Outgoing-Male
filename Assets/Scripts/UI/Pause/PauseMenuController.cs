@@ -50,7 +50,7 @@ public class PauseMenuController : MonoBehaviour
         if (openOnGameOver && !gameOverShown && gameManager != null && gameManager.HasGameEnded)
         {
             gameOverShown = true;
-            Pause();
+            OpenGameOverMenu();
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -90,7 +90,7 @@ public class PauseMenuController : MonoBehaviour
         isPaused = true;
         Time.timeScale = 0f;
         menuContainer.SetActive(true);
-        ShowRoot();
+        ShowPauseRoot();
     }
 
     public void Resume()
@@ -145,5 +145,23 @@ public class PauseMenuController : MonoBehaviour
         if (pauseRootPanel != null) pauseRootPanel.SetActive(!isGameOver);
         if (optionsPanel != null) optionsPanel.SetActive(false);
         if (gameOverPanel != null) gameOverPanel.SetActive(isGameOver);
+    }
+
+    private void ShowPauseRoot()
+    {
+        if (pauseRootPanel != null) pauseRootPanel.SetActive(true);
+        if (optionsPanel != null) optionsPanel.SetActive(false);
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+    }
+
+    private void OpenGameOverMenu()
+    {
+        isPaused = true;
+        Time.timeScale = 0f;
+        menuContainer.SetActive(true);
+
+        if (pauseRootPanel != null) pauseRootPanel.SetActive(false);
+        if (optionsPanel != null) optionsPanel.SetActive(false);
+        if (gameOverPanel != null) gameOverPanel.SetActive(true);
     }
 }
