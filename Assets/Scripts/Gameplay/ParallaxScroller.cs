@@ -12,6 +12,9 @@ public class ParallaxScroller : MonoBehaviour
     [Tooltip("Extra distance offscreen before recycling.")]
     [SerializeField] private float offscreenPadding = 0.5f;
 
+    [Tooltip("Tiny overlap applied when recycling to hide seams between pieces.")]
+    [SerializeField] private float recycleOverlap = 0.02f;
+
     [Tooltip("Optional: only scroll during gameplay.")]
     [SerializeField] private GameManager gameManager;
 
@@ -88,9 +91,16 @@ public class ParallaxScroller : MonoBehaviour
             if (rightSide < leftEdge - offscreenPadding)
             {
                 float newX = rightmostEdge + halfWidths[i];
+                newX -= recycleOverlap;
                 pieces[i].position = new Vector3(newX, pieces[i].position.y, pieces[i].position.z);
                 rightmostEdge = newX + halfWidths[i];
             }
         }
+    }
+
+    private void OnValidate()
+    {
+        offscreenPadding = Mathf.Max(0f, offscreenPadding);
+        recycleOverlap = Mathf.Max(0f, recycleOverlap);
     }
 }

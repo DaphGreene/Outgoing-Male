@@ -1585,7 +1585,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d542a843c1b94f3e9e5ff68b483c8d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenuController
-  pauseMenuCanvas: {fileID: 353438631}
   pauseRootPanel: {fileID: 726167209}
   optionsPanel: {fileID: 374508318}
   gameOverPanel: {fileID: 1554137338}
@@ -1748,7 +1747,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 827311a37187a4871961c3616519f0ae, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.5
+  m_Volume: 1
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -4394,6 +4393,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 6cbb939f4cf3447278a71c54270c2312, type: 3}
   deathSoundClip: {fileID: 8300000, guid: 85bdffede039f46f981b27e0175dad63, type: 3}
   scoreSoundClip: {fileID: 8300000, guid: 1ca0d518ce7b94d40999a5dea2d30346, type: 3}
+  gameManager: {fileID: 0}
 --- !u!70 &1206252341
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
