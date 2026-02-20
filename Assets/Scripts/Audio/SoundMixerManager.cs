@@ -26,6 +26,8 @@ public class SoundMixerManager : MonoBehaviour
         }
 
         Instance = this;
+        if (transform.parent != null)
+            transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
 
         ApplySavedVolumes();
