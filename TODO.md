@@ -4,7 +4,7 @@
 - [x] Animate logo image
 - [ ] Animate logo text
 - [x] Player sprite animation should be flapping even before game starts
-- [ ] Add Game Over text to game over screen
+- [x] Add Game Over text to game over screen
 
 ## ✨ Tier 2 – Strong Identity & UX Polish
 - [ ] Create/implement sfx for hovering over/selecting buttons
@@ -12,7 +12,7 @@
 - [ ] Add options menu to game over menu
 - [ ] Add character select option to game over menu
 - [ ] Allow for player selection of palette swap from mainmenu and pause screen
-- [ ] Add panel/sprite behind audio mixer on options/pause menu for visibility
+- [x] Add panel/sprite behind audio mixer on options/pause menu for visibility
 - [ ] Make clouds and street parallax start on game start
 - [ ] Create death animation (rapid flap + fall offscreen)
 - [ ] Add panel sprites behind menu items
@@ -31,3 +31,11 @@
 
 ## 🎨 Tier 5 – Visual Polish / Nice‑to‑Have
 - [ ] Change ground/street colors to fit with game palette
+
+## ✅ Recent Accomplishments (Unsorted)
+- [x] Unified Game scene Options layout with MainMenu options layout
+- [x] Replaced legacy text references in `GameManager` with TMP-compatible fields
+- [x] Improved Ready-state UX: animated `Get Ready!` + blinking `StartPrompt`
+- [x] Removed old StartButton/GameOverExtrude dependencies from gameplay flow
+- [x] Fixed `DontDestroyOnLoad` warning in `SoundMixerManager`
+- [x] Restored reliable start input from Ready screen (space/click/tap)

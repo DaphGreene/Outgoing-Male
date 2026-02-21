@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
@@ -14,7 +15,8 @@ public class GameManager : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private Player player;
-    [SerializeField] private AudioSource backgroundMusic;
+    [FormerlySerializedAs("backgroundMusic")]
+    [SerializeField] private AudioSource runMusicSource;
 
     [Header("UI")]
     [SerializeField] private TMP_Text scoreText;
@@ -68,6 +70,10 @@ public class GameManager : MonoBehaviour
 
         UpdateStartPromptBlink();
 
+        // Ignore start input while another system (pause/game-over menu) has gameplay paused.
+        if (Mathf.Approximately(Time.timeScale, 0f))
+            return;
+
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0) || HasTapStartedThisFrame())
         {
             Play();
@@ -98,8 +104,18 @@ public class GameManager : MonoBehaviour
 
         UpdateStartPromptBlink();
 
-        // Music: your call. For now, leave it playing or stop it.
-        // backgroundMusic.Stop();
+        // Keep menu/ready music flowing while waiting to start.
+        if (MenuMusicPlayer.Instance != null)
+        {
+            MenuMusicPlayer.Instance.ResumeMenuMusic();
+            if (runMusicSource != null && runMusicSource.isPlaying)
+                runMusicSource.Stop();
+        }
+        else if (runMusicSource != null && !runMusicSource.isPlaying)
+        {
+            // Fallback when loading Game scene directly without MainMenu.
+            runMusicSource.Play();
+        }
     }
 
     public void Play()
@@ -127,19 +143,31 @@ public class GameManager : MonoBehaviour
         }
         Time.timeScale = 1f;
 
-        if (backgroundMusic != null)
+        if (MenuMusicPlayer.Instance != null)
+            MenuMusicPlayer.Instance.PauseMenuMusic();
+
+        if (runMusicSource != null)
         {
-            backgroundMusic.Stop();
-            backgroundMusic.Play();
+            runMusicSource.Stop();
+            runMusicSource.Play();
         }
 
-        // Cleanup old obstacles
-        Obstacle[] obstacles = UnityEngine.Object.FindObjectsByType<Obstacle>(FindObjectsSortMode.None);
+        ClearExistingObstacles();
+    }
 
-        for (int i = 0; i < obstacles.Length; i++)
-        {
-            Destroy(obstacles[i].gameObject);
-        }
+    public void ReturnToReady()
+    {
+        if (!hasValidReferences) return;
+
+        score = 0;
+        scoreText.text = score.ToString();
+        Time.timeScale = 1f;
+
+        if (player != null)
+            player.ResetState();
+
+        ClearExistingObstacles();
+        SetReadyState();
     }
 
     public void GameOver()
@@ -160,8 +188,11 @@ public class GameManager : MonoBehaviour
         if (player != null)
             player.SetFrozen(true);
 
-        if (backgroundMusic != null)
-            backgroundMusic.Stop();
+        if (runMusicSource != null && runMusicSource.isPlaying)
+            runMusicSource.Stop();
+
+        if (MenuMusicPlayer.Instance != null)
+            MenuMusicPlayer.Instance.ResumeMenuMusic();
     }
 
     public void IncreaseScore()
@@ -255,6 +286,13 @@ public class GameManager : MonoBehaviour
         }
 
         return false;
+    }
+
+    private static void ClearExistingObstacles()
+    {
+        Obstacle[] obstacles = UnityEngine.Object.FindObjectsByType<Obstacle>(FindObjectsSortMode.None);
+        for (int i = 0; i < obstacles.Length; i++)
+            Destroy(obstacles[i].gameObject);
     }
 
     private void UpdateStartPromptBlink()

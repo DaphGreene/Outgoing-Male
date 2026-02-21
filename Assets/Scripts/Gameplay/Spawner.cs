@@ -8,6 +8,9 @@ public class Spawner : MonoBehaviour
     [Header("Spawn Timing (seconds)")]
     [SerializeField] private float minSpawnRate = 1f;
     [SerializeField] private float maxSpawnRate = 1f;
+    [SerializeField] private float firstSpawnDelaySeconds = 3f;
+    [SerializeField] private int introObstacleCount = 5;
+    [SerializeField] private float introSpacingMultiplier = 2f;
 
     [Header("Spawn Position")]
     [SerializeField] private float minHeight = -2f;
@@ -20,9 +23,12 @@ public class Spawner : MonoBehaviour
     [SerializeField] private bool debugSpawnLogs = false;
 
     private const float NotPlayingCheckInterval = 0.25f;
+    private bool spawnCycleInitialized;
+    private int obstaclesSpawnedThisRun;
 
     private void OnEnable()
     {
+        ResetSpawnCycle();
         CancelInvoke();
         Invoke(nameof(Tick), NotPlayingCheckInterval);
     }
@@ -43,8 +49,19 @@ public class Spawner : MonoBehaviour
         // If not playing, DO NOT schedule fast spawns. Just check again later.
         if (gameManager != null && !gameManager.IsPlaying)
         {
+            ResetSpawnCycle();
             CancelInvoke(nameof(Tick));
             Invoke(nameof(Tick), NotPlayingCheckInterval);
+            return;
+        }
+
+        // First time we enter Playing for this run: wait before the first obstacle.
+        if (!spawnCycleInitialized)
+        {
+            spawnCycleInitialized = true;
+            obstaclesSpawnedThisRun = 0;
+            CancelInvoke(nameof(Tick));
+            Invoke(nameof(Tick), Mathf.Max(0f, firstSpawnDelaySeconds));
             return;
         }
 
@@ -63,8 +80,13 @@ public class Spawner : MonoBehaviour
         if (debugSpawnLogs)
             Debug.Log($"Spawner: Spawned '{obstacleRoot.name}' at {obstacleRoot.transform.position}", this);
 
+        obstaclesSpawnedThisRun++;
+
         // Schedule the next spawn
         float delay = Random.Range(minSpawnRate, maxSpawnRate);
+        if (obstaclesSpawnedThisRun < introObstacleCount)
+            delay *= Mathf.Max(1f, introSpacingMultiplier);
+
         CancelInvoke(nameof(Tick));
         Invoke(nameof(Tick), delay);
     }
@@ -73,5 +95,14 @@ public class Spawner : MonoBehaviour
     {
         if (maxSpawnRate < minSpawnRate) maxSpawnRate = minSpawnRate;
         if (maxHeight < minHeight) maxHeight = minHeight;
+        if (firstSpawnDelaySeconds < 0f) firstSpawnDelaySeconds = 0f;
+        if (introObstacleCount < 0) introObstacleCount = 0;
+        if (introSpacingMultiplier < 1f) introSpacingMultiplier = 1f;
+    }
+
+    private void ResetSpawnCycle()
+    {
+        spawnCycleInitialized = false;
+        obstaclesSpawnedThisRun = 0;
     }
 }

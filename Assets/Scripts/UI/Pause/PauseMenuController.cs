@@ -116,13 +116,13 @@ public class PauseMenuController : MonoBehaviour
     public void OnRestartPressed()
     {
         CloseMenuAndUnpause(); // important: unpause first
-        gameManager.Play(); // keep using Play() for now
+        gameManager.ReturnToReady();
     }
 
     public void OnTryAgainPressed()
     {
         CloseMenuAndUnpause(); // important: unpause first
-        gameManager.Play(); // keep using Play() for now
+        gameManager.ReturnToReady();
     }
 
     public void OnQuitToMenuPressed()
