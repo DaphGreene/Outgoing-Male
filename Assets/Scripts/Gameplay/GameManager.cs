@@ -1,7 +1,6 @@
-﻿using System;
+using System;
+using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -18,18 +17,26 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioSource backgroundMusic;
 
     [Header("UI")]
-    [SerializeField] private Text scoreText;
-    [SerializeField] private Text highScoreText;
-    [SerializeField] private GameObject playButton;
+    [SerializeField] private TMP_Text scoreText;
+    [SerializeField] private TMP_Text highScoreText;
     [SerializeField] private GameObject getReady;
     [SerializeField] private GameObject gameOver;
-    [SerializeField] private GameObject gameOverExtrude;
-    [SerializeField] private Text startPromptText;
+    [SerializeField] private TMP_Text startPromptText;
+
+    [Header("Start Screen UI Motion")]
+    [SerializeField] private float startPromptBlinkSpeed = 2.3f;
+    [SerializeField] private float startPromptMinAlpha = 0.35f;
+    [SerializeField] private float startPromptMaxAlpha = 1f;
+
+    [Header("Get Ready Motion")]
+    [SerializeField] private float getReadyFloatAmplitude = 10f;
+    [SerializeField] private float getReadyFloatSpeed = 1.4f;
 
     private int score;
     public int Score => score;
 
     private bool hasValidReferences = true;
+    private CanvasGroup startPromptCanvasGroup;
 
     private void Awake()
     {
@@ -39,6 +46,8 @@ public class GameManager : MonoBehaviour
             enabled = false;
             return;
         }
+
+        SetupStartScreenUi();
 
         Application.targetFrameRate = 60;
         SetReadyState();
@@ -54,13 +63,12 @@ public class GameManager : MonoBehaviour
     {
         if (!hasValidReferences) return;
 
-        // Only allow "start run" input when waiting to start.
-        if (State == GameState.Playing) return;
+        // Start input is only valid from the Ready state.
+        if (State != GameState.Ready) return;
 
-        // Don't treat UI clicks as gameplay input
-        bool pointerOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        UpdateStartPromptBlink();
 
-        if (!pointerOverUI && (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)))
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0) || HasTapStartedThisFrame())
         {
             Play();
         }
@@ -74,6 +82,7 @@ public class GameManager : MonoBehaviour
         OnStateChanged?.Invoke(State);
 
         // UI
+        ConfigureGetReadyPulse();
         if (getReady != null)
             getReady.SetActive(true);
         if (startPromptText != null)
@@ -81,15 +90,13 @@ public class GameManager : MonoBehaviour
             startPromptText.gameObject.SetActive(true);
             UpdateStartPromptText();
         }
-        if (playButton != null)
-            playButton.SetActive(true);
         gameOver.SetActive(false);
-        if (gameOverExtrude != null)
-            gameOverExtrude.SetActive(false);
 
         // Gameplay
         if (player != null)
             player.SetFrozen(true);
+
+        UpdateStartPromptBlink();
 
         // Music: your call. For now, leave it playing or stop it.
         // backgroundMusic.Stop();
@@ -110,11 +117,7 @@ public class GameManager : MonoBehaviour
             getReady.SetActive(false);
         if (startPromptText != null)
             startPromptText.gameObject.SetActive(false);
-        if (playButton != null)
-            playButton.SetActive(false);
         gameOver.SetActive(false);
-        if (gameOverExtrude != null)
-            gameOverExtrude.SetActive(false);
 
         // Gameplay
         if (player != null)
@@ -148,12 +151,8 @@ public class GameManager : MonoBehaviour
 
         // UI
         gameOver.SetActive(true);
-        if (gameOverExtrude != null)
-            gameOverExtrude.SetActive(true);
         if (startPromptText != null)
             startPromptText.gameObject.SetActive(false);
-        if (playButton != null)
-            playButton.SetActive(true);
         if (getReady != null)
             getReady.SetActive(false);
 
@@ -216,6 +215,97 @@ public class GameManager : MonoBehaviour
             return;
 
         bool isMobile = Application.isMobilePlatform || Input.touchSupported;
-        startPromptText.text = isMobile ? "Tap to Flap" : "Click or Space to Flap";
+        startPromptText.text = isMobile ? "Tap to Flap" : "Click/Space to Flap";
+    }
+
+    private void SetupStartScreenUi()
+    {
+        if (startPromptText != null)
+        {
+            startPromptText.raycastTarget = false;
+            startPromptCanvasGroup = startPromptText.GetComponent<CanvasGroup>();
+            if (startPromptCanvasGroup == null)
+                startPromptCanvasGroup = startPromptText.gameObject.AddComponent<CanvasGroup>();
+        }
+        ConfigureGetReadyPulse();
+    }
+
+    private void ConfigureGetReadyPulse()
+    {
+        if (getReady == null)
+            return;
+
+        TMP_Text getReadyText = getReady.GetComponentInChildren<TMP_Text>(true);
+        if (getReadyText != null)
+            getReadyText.raycastTarget = false;
+
+        GetReadyPulse pulse = getReady.GetComponent<GetReadyPulse>();
+        if (pulse == null)
+            pulse = getReady.AddComponent<GetReadyPulse>();
+
+        pulse.SetMotion(getReadyFloatAmplitude, getReadyFloatSpeed);
+    }
+
+    private static bool HasTapStartedThisFrame()
+    {
+        for (int i = 0; i < Input.touchCount; i++)
+        {
+            if (Input.GetTouch(i).phase == TouchPhase.Began)
+                return true;
+        }
+
+        return false;
+    }
+
+    private void UpdateStartPromptBlink()
+    {
+        if (startPromptCanvasGroup == null)
+            return;
+
+        if (State != GameState.Ready || startPromptText == null || !startPromptText.gameObject.activeInHierarchy)
+        {
+            startPromptCanvasGroup.alpha = 1f;
+            return;
+        }
+
+        float phase = (Mathf.Sin(Time.unscaledTime * startPromptBlinkSpeed * Mathf.PI * 2f) + 1f) * 0.5f;
+        startPromptCanvasGroup.alpha = Mathf.Lerp(startPromptMinAlpha, startPromptMaxAlpha, phase);
+    }
+}
+
+[RequireComponent(typeof(RectTransform))]
+public class GetReadyPulse : MonoBehaviour
+{
+    [Header("Bounce")]
+    [SerializeField] private float bounceAmplitude = 10f;
+    [SerializeField] private float bounceFrequency = 1.4f;
+
+    private RectTransform rectTransform;
+    private Vector2 baseAnchoredPosition;
+
+    private void Awake()
+    {
+        rectTransform = GetComponent<RectTransform>();
+        baseAnchoredPosition = rectTransform.anchoredPosition;
+    }
+
+    private void OnEnable()
+    {
+        if (rectTransform == null)
+            rectTransform = GetComponent<RectTransform>();
+
+        baseAnchoredPosition = rectTransform.anchoredPosition;
+    }
+
+    private void Update()
+    {
+        float bounceWave = Mathf.Sin(Time.unscaledTime * bounceFrequency * Mathf.PI * 2f);
+        rectTransform.anchoredPosition = baseAnchoredPosition + Vector2.up * (bounceWave * bounceAmplitude);
+    }
+
+    public void SetMotion(float amplitude, float bounceSpeed)
+    {
+        bounceAmplitude = Mathf.Max(0f, amplitude);
+        bounceFrequency = Mathf.Max(0f, bounceSpeed);
     }
 }
