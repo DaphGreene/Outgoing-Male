@@ -16,4 +16,14 @@ MonoBehaviour:
   displayName: Heart Stamp
   sprite: {fileID: 21300000, guid: fd2985f8ee54c4a38af9ec096454f8e5, type: 3}
   scoreValue: 1
-  spawnWeight: 1
+  spawnWeight: 5
+  enabledForSpawning: 1
+  spawnMinHeight: -2
+  spawnMaxHeight: 3
+  floatPattern: 0
+  floatAmplitude: 1
+  floatFrequency: 2
+  horizontalSpeedMultiplier: 0.5
+  floatPhaseOffset: 0
+  loopRadiusX: 0
+  loopRadiusY: 0

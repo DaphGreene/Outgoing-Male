@@ -16,13 +16,15 @@ public class GameplayDebugTools : MonoBehaviour
     [SerializeField] private KeyCode toggleHoverKey = KeyCode.F3;
     [SerializeField] private KeyCode resetProgressKey = KeyCode.F4;
     [SerializeField] private KeyCode startRunKey = KeyCode.F5;
-    [SerializeField] private KeyCode toggleOverlayKey = KeyCode.F10;
+    [SerializeField] private KeyCode toggleOverlayKey = KeyCode.F8;
 
     [Header("UI")]
     [SerializeField] private bool showOverlay = true;
     [SerializeField] private OverlayCorner overlayCorner = OverlayCorner.LowerLeft;
     [SerializeField] private Vector2 overlayMargin = new(10f, 10f);
-    [SerializeField] private Vector2 overlaySize = new(360f, 136f);
+    [SerializeField] private Vector2 overlaySize = new(720f, 272f);
+    [SerializeField] private int overlayFontSize = 24;
+    [SerializeField] private float overlayLineHeight = 30f;
 
     private Player player;
     private GameManager gameManager;
@@ -83,7 +85,7 @@ public class GameplayDebugTools : MonoBehaviour
 
         float x = panelRect.x + 10f;
         float y = panelRect.y + 8f;
-        float lineHeight = 20f;
+        float lineHeight = overlayLineHeight;
 
         GUI.Label(new Rect(x, y, panelRect.width - 20f, lineHeight), "Debug Tools", overlayTextStyle);
         y += lineHeight;
@@ -96,6 +98,8 @@ public class GameplayDebugTools : MonoBehaviour
         GUI.Label(new Rect(x, y, panelRect.width - 20f, lineHeight), $"{resetProgressKey}: Reset HighScore + Stamps", overlayTextStyle);
         y += lineHeight;
         GUI.Label(new Rect(x, y, panelRect.width - 20f, lineHeight), $"{startRunKey}: Start Run   {toggleOverlayKey}: Toggle Panel", overlayTextStyle);
+        y += lineHeight;
+        GUI.Label(new Rect(x, y, panelRect.width - 20f, lineHeight), "Note: F10 is reserved for Unity Recorder.", overlayTextStyle);
     }
 
     private void ToggleInvincible()
@@ -183,15 +187,25 @@ public class GameplayDebugTools : MonoBehaviour
 
     private void EnsureOverlayStyle()
     {
-        if (overlayTextStyle != null)
-            return;
-
-        overlayTextStyle = new GUIStyle(GUI.skin.label)
+        if (overlayTextStyle == null)
         {
-            alignment = TextAnchor.MiddleLeft,
-            wordWrap = false,
-            clipping = TextClipping.Clip
-        };
+            overlayTextStyle = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.MiddleLeft,
+                wordWrap = false,
+                clipping = TextClipping.Clip
+            };
+        }
+
+        overlayTextStyle.fontSize = overlayFontSize;
+    }
+
+    private void OnValidate()
+    {
+        if (overlaySize.x < 100f) overlaySize.x = 100f;
+        if (overlaySize.y < 80f) overlaySize.y = 80f;
+        if (overlayFontSize < 10) overlayFontSize = 10;
+        if (overlayLineHeight < 12f) overlayLineHeight = 12f;
     }
 }
 #endif

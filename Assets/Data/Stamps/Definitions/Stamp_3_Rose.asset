@@ -17,3 +17,13 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 85f5c3103ea6b439f89639faa20303e2, type: 3}
   scoreValue: 1
   spawnWeight: 1
+  enabledForSpawning: 0
+  spawnMinHeight: 0.5
+  spawnMaxHeight: 0.5
+  floatPattern: 0
+  floatAmplitude: 1
+  floatFrequency: 2
+  horizontalSpeedMultiplier: 0.5
+  floatPhaseOffset: 0
+  loopRadiusX: 0.15
+  loopRadiusY: 0.08

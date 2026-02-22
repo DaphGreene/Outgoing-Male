@@ -19,8 +19,12 @@ public class StampPickup : MonoBehaviour
 
     [Header("Float Motion")]
     [SerializeField] private bool enableFloatMotion = true;
+    [SerializeField] private StampDefinition.FloatPatternType floatPattern = StampDefinition.FloatPatternType.SineSlow;
     [SerializeField] private float floatAmplitude = 0.04f;
     [SerializeField] private float floatFrequency = 0.9f;
+    [SerializeField] private float floatPhaseOffset = 0f;
+    [SerializeField] private float loopRadiusX = 0.15f;
+    [SerializeField] private float loopRadiusY = 0.08f;
 
     [Header("Debug")]
     [SerializeField] private bool debugDrawColliderWhenSelected = true;
@@ -37,8 +41,16 @@ public class StampPickup : MonoBehaviour
     private Collider2D triggerCollider;
     private bool hasBeenCollected;
     private Vector3 baseLocalScale;
+    private float driftBaseX;
     private float floatBaseY;
     private float floatElapsed;
+    private float activeHorizontalSpeedMultiplier;
+    private StampDefinition.FloatPatternType activeFloatPattern;
+    private float activeFloatAmplitude;
+    private float activeFloatFrequency;
+    private float activeFloatPhaseOffset;
+    private float activeLoopRadiusX;
+    private float activeLoopRadiusY;
 
     private void Awake()
     {
@@ -47,11 +59,13 @@ public class StampPickup : MonoBehaviour
         baseLocalScale = transform.localScale;
 
         triggerCollider.isTrigger = true;
+        RefreshMovementProfile();
         ApplyVisual();
     }
 
     private void OnEnable()
     {
+        driftBaseX = transform.position.x;
         floatBaseY = transform.position.y;
         floatElapsed = 0f;
     }
@@ -60,8 +74,10 @@ public class StampPickup : MonoBehaviour
     {
         stampDefinition = definition;
         gameManager = gm;
+        driftBaseX = transform.position.x;
         floatBaseY = transform.position.y;
         floatElapsed = 0f;
+        RefreshMovementProfile();
         ApplyVisual();
     }
 
@@ -70,15 +86,25 @@ public class StampPickup : MonoBehaviour
         if (gameManager != null && !gameManager.IsPlaying)
             return;
 
+        float horizontalSpeed = moveSpeed * activeHorizontalSpeedMultiplier;
+        driftBaseX -= horizontalSpeed * Time.deltaTime;
+
         Vector3 position = transform.position;
-        float horizontalSpeed = moveSpeed * horizontalSpeedMultiplier;
-        position += Vector3.left * horizontalSpeed * Time.deltaTime;
+        position.x = driftBaseX;
+        position.y = floatBaseY;
 
         if (enableFloatMotion)
         {
             floatElapsed += Time.deltaTime;
-            float yOffset = Mathf.Sin(floatElapsed * floatFrequency) * floatAmplitude;
-            position.y = floatBaseY + yOffset;
+            Vector2 offset = EvaluateFloatOffset(
+                floatElapsed + activeFloatPhaseOffset,
+                activeFloatPattern,
+                activeFloatFrequency,
+                activeFloatAmplitude,
+                activeLoopRadiusX,
+                activeLoopRadiusY);
+            position.x += offset.x;
+            position.y += offset.y;
         }
 
         transform.position = position;
@@ -120,6 +146,57 @@ public class StampPickup : MonoBehaviour
             spriteRenderer.sprite = stampDefinition.Sprite;
 
         ApplyScaleToCurrentSprite();
+    }
+
+    private void RefreshMovementProfile()
+    {
+        activeHorizontalSpeedMultiplier = horizontalSpeedMultiplier;
+        activeFloatPattern = floatPattern;
+        activeFloatAmplitude = floatAmplitude;
+        activeFloatFrequency = floatFrequency;
+        activeFloatPhaseOffset = floatPhaseOffset;
+        activeLoopRadiusX = loopRadiusX;
+        activeLoopRadiusY = loopRadiusY;
+
+        if (stampDefinition == null)
+            return;
+
+        activeHorizontalSpeedMultiplier = stampDefinition.HorizontalSpeedMultiplier;
+        activeFloatPattern = stampDefinition.FloatPattern;
+        activeFloatAmplitude = stampDefinition.FloatAmplitude;
+        activeFloatFrequency = stampDefinition.FloatFrequency;
+        activeFloatPhaseOffset = stampDefinition.FloatPhaseOffset;
+        activeLoopRadiusX = stampDefinition.LoopRadiusX;
+        activeLoopRadiusY = stampDefinition.LoopRadiusY;
+    }
+
+    private static Vector2 EvaluateFloatOffset(
+        float t,
+        StampDefinition.FloatPatternType pattern,
+        float frequency,
+        float amplitude,
+        float loopX,
+        float loopY)
+    {
+        switch (pattern)
+        {
+            case StampDefinition.FloatPatternType.SineFast:
+                return new Vector2(0f, Mathf.Sin(t * frequency * 1.8f) * amplitude);
+
+            case StampDefinition.FloatPatternType.Triangle:
+                return new Vector2(0f, (Mathf.PingPong(t * frequency, 1f) * 2f - 1f) * amplitude);
+
+            case StampDefinition.FloatPatternType.Saw:
+                return new Vector2(0f, (Mathf.Repeat(t * frequency, 1f) * 2f - 1f) * amplitude);
+
+            case StampDefinition.FloatPatternType.Loop:
+                float angle = t * frequency * Mathf.PI * 2f;
+                return new Vector2(Mathf.Cos(angle) * loopX, Mathf.Sin(angle) * loopY);
+
+            case StampDefinition.FloatPatternType.SineSlow:
+            default:
+                return new Vector2(0f, Mathf.Sin(t * frequency) * amplitude);
+        }
     }
 
     private void ApplyScaleToCurrentSprite()
@@ -206,10 +283,13 @@ public class StampPickup : MonoBehaviour
     private void OnValidate()
     {
         if (moveSpeed < 0f) moveSpeed = 0f;
+        if (horizontalSpeedMultiplier < 0.1f) horizontalSpeedMultiplier = 0.1f;
         if (fallbackStampValue < 0) fallbackStampValue = 0;
         if (maxWorldSize.x < 0.01f) maxWorldSize.x = 0.01f;
         if (maxWorldSize.y < 0.01f) maxWorldSize.y = 0.01f;
         if (floatAmplitude < 0f) floatAmplitude = 0f;
         if (floatFrequency < 0f) floatFrequency = 0f;
+        if (loopRadiusX < 0f) loopRadiusX = 0f;
+        if (loopRadiusY < 0f) loopRadiusY = 0f;
     }
 }

@@ -16,4 +16,14 @@ MonoBehaviour:
   displayName: Glitch Girl Stamp
   sprite: {fileID: 21300000, guid: e2aec0f9cecd143138a8cff5deb1ff8c, type: 3}
   scoreValue: 1
-  spawnWeight: 1
+  spawnWeight: 2
+  enabledForSpawning: 1
+  spawnMinHeight: 3
+  spawnMaxHeight: 3
+  floatPattern: 4
+  floatAmplitude: 0.3
+  floatFrequency: 0.2
+  horizontalSpeedMultiplier: 0.5
+  floatPhaseOffset: 0
+  loopRadiusX: 1
+  loopRadiusY: 1

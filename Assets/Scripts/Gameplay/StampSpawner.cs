@@ -14,8 +14,11 @@ public class StampSpawner : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float spawnChance = 0.5f;
 
     [Header("Spawn Position")]
-    [SerializeField] private float minHeight = -2f;
-    [SerializeField] private float maxHeight = 3f;
+    [SerializeField] private float fallbackMinHeight = -2f;
+    [SerializeField] private float fallbackMaxHeight = 3f;
+
+    [Header("Spawn Limits")]
+    [SerializeField, Min(1)] private int maxConcurrentStamps = 1;
 
     [Header("Debug")]
     [SerializeField] private bool debugSpawnLogs = false;
@@ -74,12 +77,25 @@ public class StampSpawner : MonoBehaviour
 
     private void TrySpawnStamp()
     {
+        int activeStampCount = Object.FindObjectsByType<StampPickup>(FindObjectsSortMode.None).Length;
+        if (activeStampCount >= maxConcurrentStamps)
+        {
+            if (debugSpawnLogs)
+                Debug.Log($"StampSpawner: Active cap reached ({activeStampCount}/{maxConcurrentStamps}).", this);
+            return;
+        }
+
         if (Random.value > spawnChance)
             return;
 
         StampDefinition definition = PickWeightedStamp();
         if (definition == null)
             return;
+
+        float minHeight = definition != null ? definition.SpawnMinHeight : fallbackMinHeight;
+        float maxHeight = definition != null ? definition.SpawnMaxHeight : fallbackMaxHeight;
+        if (maxHeight < minHeight)
+            maxHeight = minHeight;
 
         Vector3 spawnPosition = transform.position + Vector3.up * Random.Range(minHeight, maxHeight);
         GameObject stampObject = Instantiate(stampPickupPrefab, spawnPosition, Quaternion.identity);
@@ -105,20 +121,24 @@ public class StampSpawner : MonoBehaviour
         for (int i = 0; i < stamps.Count; i++)
         {
             StampDefinition stamp = stamps[i];
-            if (stamp == null || stamp.SpawnWeight <= 0f)
+            if (stamp == null || !stamp.EnabledForSpawning || stamp.SpawnWeight <= 0f)
                 continue;
 
             totalWeight += stamp.SpawnWeight;
         }
 
         if (totalWeight <= 0f)
+        {
+            if (debugSpawnLogs)
+                Debug.Log("StampSpawner: No enabled stamps with positive spawn weight.", this);
             return null;
+        }
 
         float roll = Random.Range(0f, totalWeight);
         for (int i = 0; i < stamps.Count; i++)
         {
             StampDefinition stamp = stamps[i];
-            if (stamp == null || stamp.SpawnWeight <= 0f)
+            if (stamp == null || !stamp.EnabledForSpawning || stamp.SpawnWeight <= 0f)
                 continue;
 
             roll -= stamp.SpawnWeight;
@@ -133,7 +153,8 @@ public class StampSpawner : MonoBehaviour
     {
         if (maxSpawnRate < minSpawnRate) maxSpawnRate = minSpawnRate;
         if (firstSpawnDelaySeconds < 0f) firstSpawnDelaySeconds = 0f;
-        if (maxHeight < minHeight) maxHeight = minHeight;
+        if (fallbackMaxHeight < fallbackMinHeight) fallbackMaxHeight = fallbackMinHeight;
+        if (maxConcurrentStamps < 1) maxConcurrentStamps = 1;
     }
 
     private void ResetSpawnCycle()
