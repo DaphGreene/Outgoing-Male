@@ -3,6 +3,7 @@
 public class Obstacle : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float destroyX = -16f;
 
     private GameManager gameManager;
 
@@ -19,5 +20,13 @@ public class Obstacle : MonoBehaviour
             return;
 
         transform.position += Vector3.left * moveSpeed * Time.deltaTime;
+
+        if (transform.position.x < destroyX)
+            Destroy(gameObject);
+    }
+
+    private void OnValidate()
+    {
+        if (moveSpeed < 0f) moveSpeed = 0f;
     }
 }
