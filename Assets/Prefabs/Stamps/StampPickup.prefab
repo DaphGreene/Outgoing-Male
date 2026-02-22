@@ -151,9 +151,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 649653f679c348c2bb835ce5b8e9df95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StampPickup
-  moveSpeed: 5
-  fallbackScoreValue: 1
+  moveSpeed: 2
+  horizontalSpeedMultiplier: 0.6
+  fallbackStampValue: 1
   destroyX: -16
   normalizeSpriteSize: 1
-  maxWorldSize: {x: 1, y: 1}
+  maxWorldSize: {x: 0.75, y: 0.75}
+  autoFitColliderToSprite: 1
+  enableFloatMotion: 1
+  floatAmplitude: 0.5
+  floatFrequency: 4
+  debugDrawColliderWhenSelected: 1
+  debugDrawColliderAlways: 0
+  debugColliderColor: {r: 0.2, g: 1, b: 0.4, a: 0.9}
+  debugColliderMissingColor: {r: 1, g: 0.3, b: 0.3, a: 0.9}
   collectSoundClip: {fileID: 8300000, guid: 1ca0d518ce7b94d40999a5dea2d30346, type: 3}

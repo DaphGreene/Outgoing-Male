@@ -7,6 +7,7 @@ public class StampPickup : MonoBehaviour
 {
     [Header("Gameplay")]
     [SerializeField] private float moveSpeed = 5f;
+    [SerializeField, Range(0.1f, 1.5f)] private float horizontalSpeedMultiplier = 0.82f;
     [FormerlySerializedAs("fallbackScoreValue")]
     [SerializeField] private int fallbackStampValue = 1;
     [SerializeField] private float destroyX = -16f;
@@ -19,7 +20,7 @@ public class StampPickup : MonoBehaviour
     [Header("Float Motion")]
     [SerializeField] private bool enableFloatMotion = true;
     [SerializeField] private float floatAmplitude = 0.04f;
-    [SerializeField] private float floatFrequency = 1.8f;
+    [SerializeField] private float floatFrequency = 0.9f;
 
     [Header("Debug")]
     [SerializeField] private bool debugDrawColliderWhenSelected = true;
@@ -37,14 +38,13 @@ public class StampPickup : MonoBehaviour
     private bool hasBeenCollected;
     private Vector3 baseLocalScale;
     private float floatBaseY;
-    private float floatPhaseOffset;
+    private float floatElapsed;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         triggerCollider = GetComponent<Collider2D>();
         baseLocalScale = transform.localScale;
-        floatPhaseOffset = Random.Range(0f, Mathf.PI * 2f);
 
         triggerCollider.isTrigger = true;
         ApplyVisual();
@@ -53,6 +53,7 @@ public class StampPickup : MonoBehaviour
     private void OnEnable()
     {
         floatBaseY = transform.position.y;
+        floatElapsed = 0f;
     }
 
     public void Configure(StampDefinition definition, GameManager gm)
@@ -60,6 +61,7 @@ public class StampPickup : MonoBehaviour
         stampDefinition = definition;
         gameManager = gm;
         floatBaseY = transform.position.y;
+        floatElapsed = 0f;
         ApplyVisual();
     }
 
@@ -69,11 +71,13 @@ public class StampPickup : MonoBehaviour
             return;
 
         Vector3 position = transform.position;
-        position += Vector3.left * moveSpeed * Time.deltaTime;
+        float horizontalSpeed = moveSpeed * horizontalSpeedMultiplier;
+        position += Vector3.left * horizontalSpeed * Time.deltaTime;
 
         if (enableFloatMotion)
         {
-            float yOffset = Mathf.Sin((Time.time + floatPhaseOffset) * floatFrequency) * floatAmplitude;
+            floatElapsed += Time.deltaTime;
+            float yOffset = Mathf.Sin(floatElapsed * floatFrequency) * floatAmplitude;
             position.y = floatBaseY + yOffset;
         }
 
