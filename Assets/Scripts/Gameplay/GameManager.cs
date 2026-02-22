@@ -195,16 +195,18 @@ public class GameManager : MonoBehaviour
             MenuMusicPlayer.Instance.ResumeMenuMusic();
     }
 
-    public void IncreaseScore()
+    public void IncreaseScore(int amount = 1)
     {
         if (!hasValidReferences) return;
+        if (amount <= 0) return;
 
-        score++;
+        score += amount;
         scoreText.text = score.ToString();
 
         if (score > PlayerPrefs.GetInt("HighScore", 0))
         {
             PlayerPrefs.SetInt("HighScore", score);
+            PlayerPrefs.Save();
             UpdateHighScoreText();
         }
     }
@@ -293,6 +295,10 @@ public class GameManager : MonoBehaviour
         Obstacle[] obstacles = UnityEngine.Object.FindObjectsByType<Obstacle>(FindObjectsSortMode.None);
         for (int i = 0; i < obstacles.Length; i++)
             Destroy(obstacles[i].gameObject);
+
+        StampPickup[] stampPickups = UnityEngine.Object.FindObjectsByType<StampPickup>(FindObjectsSortMode.None);
+        for (int i = 0; i < stampPickups.Length; i++)
+            Destroy(stampPickups[i].gameObject);
     }
 
     private void UpdateStartPromptBlink()

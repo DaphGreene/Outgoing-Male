@@ -12,18 +12,20 @@ public class OptionsPanelController : MonoBehaviour
 
     private void OnEnable()
     {
+        EnsureMixerApplied();
         SyncSlidersFromSaved();
         WireListenersOnce();
     }
 
     private void SyncSlidersFromSaved()
     {
-        if (SoundMixerManager.Instance == null) return;
+        SoundMixerManager mixerManager = GetMixerManager();
+        if (mixerManager == null) return;
 
         // Set slider values without needing to click anything
-        masterSlider.SetValueWithoutNotify(SoundMixerManager.Instance.GetMasterLinear());
-        musicSlider.SetValueWithoutNotify(SoundMixerManager.Instance.GetMusicLinear());
-        sfxSlider.SetValueWithoutNotify(SoundMixerManager.Instance.GetSfxLinear());
+        masterSlider.SetValueWithoutNotify(mixerManager.GetMasterLinear());
+        musicSlider.SetValueWithoutNotify(mixerManager.GetMusicLinear());
+        sfxSlider.SetValueWithoutNotify(mixerManager.GetSfxLinear());
     }
 
     private void WireListenersOnce()
@@ -31,8 +33,44 @@ public class OptionsPanelController : MonoBehaviour
         if (isWiringDone) return;
         isWiringDone = true;
 
-        masterSlider.onValueChanged.AddListener(v => SoundMixerManager.Instance.SetMasterLinear(v));
-        musicSlider.onValueChanged.AddListener(v => SoundMixerManager.Instance.SetMusicLinear(v));
-        sfxSlider.onValueChanged.AddListener(v => SoundMixerManager.Instance.SetSfxLinear(v));
+        masterSlider.onValueChanged.AddListener(OnMasterSliderChanged);
+        musicSlider.onValueChanged.AddListener(OnMusicSliderChanged);
+        sfxSlider.onValueChanged.AddListener(OnSfxSliderChanged);
+    }
+
+    private void OnMasterSliderChanged(float value)
+    {
+        SoundMixerManager mixerManager = GetMixerManager();
+        if (mixerManager == null) return;
+        mixerManager.SetMasterLinear(value);
+    }
+
+    private void OnMusicSliderChanged(float value)
+    {
+        SoundMixerManager mixerManager = GetMixerManager();
+        if (mixerManager == null) return;
+        mixerManager.SetMusicLinear(value);
+    }
+
+    private void OnSfxSliderChanged(float value)
+    {
+        SoundMixerManager mixerManager = GetMixerManager();
+        if (mixerManager == null) return;
+        mixerManager.SetSfxLinear(value);
+    }
+
+    private void EnsureMixerApplied()
+    {
+        SoundMixerManager mixerManager = GetMixerManager();
+        if (mixerManager == null) return;
+        mixerManager.ApplySavedVolumes();
+    }
+
+    private static SoundMixerManager GetMixerManager()
+    {
+        if (SoundMixerManager.Instance != null)
+            return SoundMixerManager.Instance;
+
+        return Object.FindFirstObjectByType<SoundMixerManager>();
     }
 }

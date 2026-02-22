@@ -41,6 +41,7 @@ public class SoundMixerManager : MonoBehaviour
     {
         value01 = Clamp01Safe(value01);
         PlayerPrefs.SetFloat(MasterKey, value01);
+        PlayerPrefs.Save();
         SetMixerDb(masterParam, value01);
     }
 
@@ -48,6 +49,7 @@ public class SoundMixerManager : MonoBehaviour
     {
         value01 = Clamp01Safe(value01);
         PlayerPrefs.SetFloat(MusicKey, value01);
+        PlayerPrefs.Save();
         SetMixerDb(musicParam, value01);
     }
 
@@ -55,6 +57,7 @@ public class SoundMixerManager : MonoBehaviour
     {
         value01 = Clamp01Safe(value01);
         PlayerPrefs.SetFloat(SfxKey, value01);
+        PlayerPrefs.Save();
         SetMixerDb(sfxParam, value01);
     }
 
