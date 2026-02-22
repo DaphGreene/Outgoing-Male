@@ -217,6 +217,12 @@ public class GameManager : MonoBehaviour
         highScoreText.text = $"High Score: {PlayerPrefs.GetInt("HighScore", 0)}";
     }
 
+    public void RefreshHighScoreDisplayFromPrefs()
+    {
+        if (!hasValidReferences) return;
+        UpdateHighScoreText();
+    }
+
     private bool ValidateRequiredReferences()
     {
         bool isValid = true;

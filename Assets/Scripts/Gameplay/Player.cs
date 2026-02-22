@@ -17,6 +17,16 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioClip scoreSoundClip;
     [SerializeField] private GameManager gameManager;
 
+    [Header("Debug")]
+    [SerializeField] private bool debugInvincible;
+    [SerializeField] private bool debugAutoFlap;
+    [SerializeField] private float debugAutoFlapInterval = 0.2f;
+    [SerializeField] private bool debugHoverEnabled;
+    [SerializeField] private float debugHoverTargetY = 0.5f;
+    [SerializeField] private float debugHoverLerpSpeed = 8f;
+
+    private float debugAutoFlapTimer;
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -43,6 +53,7 @@ public class Player : MonoBehaviour
     {
         transform.position = startPosition;
         direction = Vector3.zero;
+        debugAutoFlapTimer = 0f;
     }
 
     public void SetFrozen(bool frozen)
@@ -56,6 +67,25 @@ public class Player : MonoBehaviour
     {
         if (isFrozen)
             return;
+
+        if (debugHoverEnabled)
+        {
+            direction = Vector3.zero;
+            Vector3 hoverPosition = transform.position;
+            hoverPosition.y = Mathf.Lerp(hoverPosition.y, debugHoverTargetY, debugHoverLerpSpeed * Time.deltaTime);
+            transform.position = hoverPosition;
+            return;
+        }
+
+        if (debugAutoFlap)
+        {
+            debugAutoFlapTimer -= Time.deltaTime;
+            if (debugAutoFlapTimer <= 0f)
+            {
+                ApplyFlap();
+                debugAutoFlapTimer = debugAutoFlapInterval;
+            }
+        }
 
         if (ShouldFlapThisFrame())
             ApplyFlap();
@@ -124,6 +154,9 @@ public class Player : MonoBehaviour
 
         if (other.CompareTag("Obstacle"))
         {
+            if (debugInvincible)
+                return;
+
             gameManager.GameOver();
 
             // Play death sound ONCE
@@ -140,5 +173,34 @@ public class Player : MonoBehaviour
                     SoundFXManager.Instance.PlaySoundFXClip(scoreSoundClip, transform);
             }
         }
+    }
+
+    public void SetDebugInvincible(bool enabled)
+    {
+        debugInvincible = enabled;
+    }
+
+    public void SetDebugAutoFlap(bool enabled)
+    {
+        debugAutoFlap = enabled;
+        debugAutoFlapTimer = 0f;
+    }
+
+    public void SetDebugHover(bool enabled, float targetY)
+    {
+        debugHoverEnabled = enabled;
+        debugHoverTargetY = targetY;
+        if (!enabled)
+            direction = Vector3.zero;
+    }
+
+    public bool IsDebugInvincible => debugInvincible;
+    public bool IsDebugAutoFlap => debugAutoFlap;
+    public bool IsDebugHoverEnabled => debugHoverEnabled;
+
+    private void OnValidate()
+    {
+        if (debugAutoFlapInterval < 0.05f) debugAutoFlapInterval = 0.05f;
+        if (debugHoverLerpSpeed < 0f) debugHoverLerpSpeed = 0f;
     }
 }
