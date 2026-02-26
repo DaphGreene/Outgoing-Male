@@ -2,13 +2,13 @@
 
 ## 🔥 Tier 1 – Required for Public itch.io Release (v0.1)
 - [x] Animate logo image
-- [ ] Animate logo text
+- [x] Animate logo text
 - [x] Player sprite animation should be flapping even before game starts
 - [x] Add Game Over text to game over screen
 
 ## ✨ Tier 2 – Strong Identity & UX Polish
 - [ ] Create/implement sfx for hovering over/selecting buttons
-- [ ] Implement MainMenu music loop that will switch when the game is started
+- [x] Implement MainMenu music loop that will switch when the game is started
 - [ ] Add options menu to game over menu
 - [ ] Add character select option to game over menu
 - [ ] Allow for player selection of palette swap from mainmenu and pause screen
@@ -20,13 +20,13 @@
 ## 🧩 Tier 3 – Light Progression (Optional for v0.1)
 - [ ] Add temp menu/image to Character Select screen with single blacked-out unlockable palette swap
 - [ ] Set point threshold for unlocking first cosmetic and test to see if unlock works properly
-- [ ] Create custom button sprite to use across UI screens
+- [x] Create custom button sprite to use across UI screens
 
 ## 🚀 Tier 4 – Post‑Launch Systems
 - [x] Create `StampDefinition` and `StampCatalog` data scripts
 - [x] Create initial stamp data assets and stamp catalog entries
-- [ ] Implement collectible stamp mechanic using stamp sprites available, test
-- [ ] Create `StampPickup` prefab/component and hook into gameplay spawn/collection flow
+- [x] Implement collectible stamp mechanic using stamp sprites available, test
+- [x] Create `StampPickup` prefab/component and hook into gameplay spawn/collection flow
 - [ ] Add stamp collection sfx
 
 ## 🎨 Tier 5 – Visual Polish / Nice‑to‑Have
