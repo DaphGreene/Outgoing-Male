@@ -2,13 +2,13 @@
 
 ## 🔥 Tier 1 – Required for Public itch.io Release (v0.1)
 - [x] Animate logo image
-- [ ] Animate logo text
+- [x] Animate logo text
 - [x] Player sprite animation should be flapping even before game starts
 - [x] Add Game Over text to game over screen
 
 ## ✨ Tier 2 – Strong Identity & UX Polish
 - [ ] Create/implement sfx for hovering over/selecting buttons
-- [ ] Implement MainMenu music loop that will switch when the game is started
+- [x] Implement MainMenu music loop that will switch when the game is started
 - [ ] Add options menu to game over menu
 - [ ] Add character select option to game over menu
 - [ ] Allow for player selection of palette swap from mainmenu and pause screen
