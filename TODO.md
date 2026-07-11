@@ -20,13 +20,13 @@
 ## 🧩 Tier 3 – Light Progression (Optional for v0.1)
 - [ ] Add temp menu/image to Character Select screen with single blacked-out unlockable palette swap
 - [ ] Set point threshold for unlocking first cosmetic and test to see if unlock works properly
-- [ ] Create custom button sprite to use across UI screens
+- [x] Create custom button sprite to use across UI screens
 
 ## 🚀 Tier 4 – Post‑Launch Systems
 - [x] Create `StampDefinition` and `StampCatalog` data scripts
 - [x] Create initial stamp data assets and stamp catalog entries
-- [ ] Implement collectible stamp mechanic using stamp sprites available, test
-- [ ] Create `StampPickup` prefab/component and hook into gameplay spawn/collection flow
+- [x] Implement collectible stamp mechanic using stamp sprites available, test
+- [x] Create `StampPickup` prefab/component and hook into gameplay spawn/collection flow
 - [ ] Add stamp collection sfx
 
 ## 🎨 Tier 5 – Visual Polish / Nice‑to‑Have
