@@ -157,10 +157,10 @@ public class Player : MonoBehaviour
             if (debugInvincible)
                 return;
 
-            gameManager.GameOver();
+            bool wasFatalHit = gameManager.TakeHit();
 
-            // Play death sound ONCE
-            if (deathSoundClip != null && SoundFXManager.Instance != null)
+            // Keep the existing death SFX behavior for the current one-hit setup.
+            if (wasFatalHit && deathSoundClip != null && SoundFXManager.Instance != null)
                 SoundFXManager.Instance.PlaySoundFXClip(deathSoundClip, transform);
         }
         else if (other.CompareTag("Scoring"))

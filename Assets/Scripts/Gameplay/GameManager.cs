@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
@@ -24,6 +25,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject getReady;
     [SerializeField] private GameObject gameOver;
     [SerializeField] private TMP_Text startPromptText;
+    [SerializeField] private GameObject hitIndicatorRoot;
+    [SerializeField] private Image hitIndicatorImage;
+    [SerializeField] private Sprite hitAvailableSprite;
+    [SerializeField] private Sprite hitSpentSprite;
+
+    [Header("Player Hits")]
+    [SerializeField, Min(1)] private int startingHits = 1;
 
     [Header("Start Screen UI Motion")]
     [SerializeField] private float startPromptBlinkSpeed = 2.3f;
@@ -36,9 +44,11 @@ public class GameManager : MonoBehaviour
 
     private int score;
     public int Score => score;
+    public int CurrentHits => currentHits;
 
     private bool hasValidReferences = true;
     private CanvasGroup startPromptCanvasGroup;
+    private int currentHits;
 
     private void Awake()
     {
@@ -86,6 +96,7 @@ public class GameManager : MonoBehaviour
 
         State = GameState.Ready;
         OnStateChanged?.Invoke(State);
+        ResetHits();
 
         // UI
         ConfigureGetReadyPulse();
@@ -173,6 +184,7 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         if (!hasValidReferences) return;
+        if (State == GameState.GameOver) return;
 
         State = GameState.GameOver;
         OnStateChanged?.Invoke(State);
@@ -209,6 +221,25 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.Save();
             UpdateHighScoreText();
         }
+    }
+
+    public bool TakeHit()
+    {
+        if (!hasValidReferences) return false;
+        if (State == GameState.GameOver) return true;
+        if (currentHits <= 0) return true;
+
+        currentHits = Mathf.Max(0, currentHits - 1);
+        RefreshHitUi();
+
+        if (currentHits > 0)
+        {
+            // Multi-hit behavior can be expanded when upgrades land.
+            return false;
+        }
+
+        GameOver();
+        return true;
     }
 
     private void UpdateHighScoreText()
@@ -285,6 +316,29 @@ public class GameManager : MonoBehaviour
         pulse.SetMotion(getReadyFloatAmplitude, getReadyFloatSpeed);
     }
 
+    private void ResetHits()
+    {
+        currentHits = Mathf.Max(1, startingHits);
+        RefreshHitUi();
+    }
+
+    private void RefreshHitUi()
+    {
+        if (hitIndicatorRoot != null && !hitIndicatorRoot.activeSelf)
+            hitIndicatorRoot.SetActive(true);
+
+        if (hitIndicatorImage == null)
+            return;
+
+        bool hasHitsRemaining = currentHits > 0;
+        Sprite targetSprite = hasHitsRemaining ? hitAvailableSprite : hitSpentSprite;
+
+        if (targetSprite != null)
+            hitIndicatorImage.sprite = targetSprite;
+
+        hitIndicatorImage.enabled = true;
+    }
+
     private static bool HasTapStartedThisFrame()
     {
         for (int i = 0; i < Input.touchCount; i++)
@@ -298,11 +352,11 @@ public class GameManager : MonoBehaviour
 
     private static void ClearExistingObstacles()
     {
-        Obstacle[] obstacles = UnityEngine.Object.FindObjectsByType<Obstacle>(FindObjectsSortMode.None);
+        Obstacle[] obstacles = UnityEngine.Object.FindObjectsByType<Obstacle>();
         for (int i = 0; i < obstacles.Length; i++)
             Destroy(obstacles[i].gameObject);
 
-        StampPickup[] stampPickups = UnityEngine.Object.FindObjectsByType<StampPickup>(FindObjectsSortMode.None);
+        StampPickup[] stampPickups = UnityEngine.Object.FindObjectsByType<StampPickup>();
         for (int i = 0; i < stampPickups.Length; i++)
             Destroy(stampPickups[i].gameObject);
     }
