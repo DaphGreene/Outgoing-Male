@@ -22,9 +22,9 @@ public class GameplayDebugTools : MonoBehaviour
     [SerializeField] private bool showOverlay = true;
     [SerializeField] private OverlayCorner overlayCorner = OverlayCorner.LowerLeft;
     [SerializeField] private Vector2 overlayMargin = new(10f, 10f);
-    [SerializeField] private Vector2 overlaySize = new(720f, 272f);
-    [SerializeField] private int overlayFontSize = 24;
-    [SerializeField] private float overlayLineHeight = 30f;
+    [SerializeField] private Vector2 overlaySize = new(360f, 136f);
+    [SerializeField] private int overlayFontSize = 12;
+    [SerializeField] private float overlayLineHeight = 15f;
 
     private Player player;
     private GameManager gameManager;

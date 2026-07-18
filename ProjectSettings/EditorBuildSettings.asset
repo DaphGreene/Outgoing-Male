@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/Boot.unity
     guid: ac5ef5606fa0c4cf5b900bae5ba0f04f
   - enabled: 1
@@ -17,4 +17,3 @@ EditorBuildSettings:
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f,
       type: 2}
-  m_UseUCBPForAssetBundles: 0
