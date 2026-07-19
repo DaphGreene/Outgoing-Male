@@ -33,7 +33,7 @@ public class Player : MonoBehaviour
         startPosition = transform.position;
 
         if (gameManager == null)
-            gameManager = Object.FindFirstObjectByType<GameManager>();
+            gameManager = Object.FindAnyObjectByType<GameManager>();
 
         if (gameManager == null)
             Debug.LogError("Player: GameManager reference is missing.", this);

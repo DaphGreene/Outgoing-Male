@@ -33,7 +33,7 @@ public class GameplayDebugTools : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void EnsureExists()
     {
-        if (Object.FindFirstObjectByType<GameplayDebugTools>() != null)
+        if (Object.FindAnyObjectByType<GameplayDebugTools>() != null)
             return;
 
         GameObject toolObject = new("GameplayDebugTools");
@@ -146,7 +146,7 @@ public class GameplayDebugTools : MonoBehaviour
         PlayerPrefs.Save();
         StampBank.SetCount(0);
 
-        var highScoreHuds = Object.FindObjectsByType<HighScoreHud>(FindObjectsSortMode.None);
+        var highScoreHuds = Object.FindObjectsByType<HighScoreHud>();
         for (int i = 0; i < highScoreHuds.Length; i++)
             highScoreHuds[i].Refresh();
 
@@ -168,10 +168,10 @@ public class GameplayDebugTools : MonoBehaviour
     private void EnsureReferences()
     {
         if (player == null)
-            player = Object.FindFirstObjectByType<Player>();
+            player = Object.FindAnyObjectByType<Player>();
 
         if (gameManager == null)
-            gameManager = Object.FindFirstObjectByType<GameManager>();
+            gameManager = Object.FindAnyObjectByType<GameManager>();
     }
 
     private Rect BuildOverlayRect()

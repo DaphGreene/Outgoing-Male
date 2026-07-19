@@ -71,6 +71,6 @@ public class OptionsPanelController : MonoBehaviour
         if (SoundMixerManager.Instance != null)
             return SoundMixerManager.Instance;
 
-        return Object.FindFirstObjectByType<SoundMixerManager>();
+        return Object.FindAnyObjectByType<SoundMixerManager>();
     }
 }

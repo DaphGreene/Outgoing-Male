@@ -39,7 +39,7 @@ public class StampCountHud : MonoBehaviour
         if (!activeScene.IsValid())
             return;
 
-        var texts = Object.FindObjectsByType<TMP_Text>(FindObjectsSortMode.None);
+        var texts = Object.FindObjectsByType<TMP_Text>();
         for (int i = 0; i < texts.Length; i++)
         {
             TMP_Text text = texts[i];

@@ -77,7 +77,7 @@ public class StampSpawner : MonoBehaviour
 
     private void TrySpawnStamp()
     {
-        int activeStampCount = Object.FindObjectsByType<StampPickup>(FindObjectsSortMode.None).Length;
+        int activeStampCount = Object.FindObjectsByType<StampPickup>().Length;
         if (activeStampCount >= maxConcurrentStamps)
         {
             if (debugSpawnLogs)
