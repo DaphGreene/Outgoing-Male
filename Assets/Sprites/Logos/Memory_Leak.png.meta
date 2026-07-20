@@ -1,0 +1,533 @@
+fileFormatVersion: 2
+guid: a26bb9366c3f44feeadffbf69e64d9f6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4458234405354382247
+    second: Memory Leak_0
+  - first:
+      213: 3348232232857982722
+    second: Memory Leak_1
+  - first:
+      213: -7783042053246017318
+    second: Memory Leak_2
+  - first:
+      213: -3519523491395491522
+    second: Memory Leak_3
+  - first:
+      213: -8452068178946586147
+    second: Memory Leak_4
+  - first:
+      213: 1392086822883233314
+    second: Memory Leak_5
+  - first:
+      213: 6003028116540714098
+    second: Memory Leak_6
+  - first:
+      213: 4690709652035032407
+    second: Memory Leak_7
+  - first:
+      213: -4396701469366937333
+    second: Memory Leak_8
+  - first:
+      213: 713212405457853045
+    second: Memory Leak_9
+  - first:
+      213: -7659974224651227069
+    second: Memory Leak_10
+  - first:
+      213: 3028715948463266412
+    second: Memory Leak_11
+  - first:
+      213: 978426128530186557
+    second: Memory Leak_12
+  - first:
+      213: -2600338427586398058
+    second: Memory Leak_13
+  - first:
+      213: 4454906653478665936
+    second: Memory Leak_14
+  - first:
+      213: 2893412619745055281
+    second: Memory Leak_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Memory Leak_0
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 219
+        width: 210
+        height: 130
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95c5d67dd6b2122c0800000000000000
+      internalID: -4458234405354382247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Memory Leak_1
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 159
+        width: 34
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2075301e97f477e20800000000000000
+      internalID: 3348232232857982722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Memory Leak_2
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 167
+        width: 42
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad028582d741df390800000000000000
+      internalID: -7783042053246017318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Memory Leak_3
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 167
+        width: 30
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e39aab42804282fc0800000000000000
+      internalID: -3519523491395491522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Memory Leak_4
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 167
+        width: 42
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd98180b5c834ba80800000000000000
+      internalID: -8452068178946586147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Memory Leak_5
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 171
+        width: 34
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22e057ef69fa15310800000000000000
+      internalID: 1392086822883233314
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Memory Leak_6
+      rect:
+        serializedVersion: 2
+        x: 251
+        y: 167
+        width: 34
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27c671f344a0f4350800000000000000
+      internalID: 6003028116540714098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Memory Leak_7
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 111
+        width: 30
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7555b0a739fb81140800000000000000
+      internalID: 4690709652035032407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Memory Leak_8
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 115
+        width: 38
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0912feee47cbf2c0800000000000000
+      internalID: -4396701469366937333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Memory Leak_9
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 123
+        width: 38
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57a97bc67e6d5e900800000000000000
+      internalID: 713212405457853045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Memory Leak_10
+      rect:
+        serializedVersion: 2
+        x: 243
+        y: 115
+        width: 54
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 340f307e60e42b590800000000000000
+      internalID: -7659974224651227069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Memory Leak_11
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 55
+        width: 50
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6a96b9bb19280a20800000000000000
+      internalID: 3028715948463266412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Memory Leak_12
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 59
+        width: 34
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d31a0064161149d00800000000000000
+      internalID: 978426128530186557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Memory Leak_13
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 67
+        width: 38
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6983aef2afdb9ebd0800000000000000
+      internalID: -2600338427586398058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Memory Leak_14
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 63
+        width: 38
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0debe1c8ff103dd30800000000000000
+      internalID: 4454906653478665936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Memory Leak_15
+      rect:
+        serializedVersion: 2
+        x: 271
+        y: 63
+        width: 46
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 132598c9277772820800000000000000
+      internalID: 2893412619745055281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Memory Leak_0: -4458234405354382247
+      Memory Leak_1: 3348232232857982722
+      Memory Leak_10: -7659974224651227069
+      Memory Leak_11: 3028715948463266412
+      Memory Leak_12: 978426128530186557
+      Memory Leak_13: -2600338427586398058
+      Memory Leak_14: 4454906653478665936
+      Memory Leak_15: 2893412619745055281
+      Memory Leak_2: -7783042053246017318
+      Memory Leak_3: -3519523491395491522
+      Memory Leak_4: -8452068178946586147
+      Memory Leak_5: 1392086822883233314
+      Memory Leak_6: 6003028116540714098
+      Memory Leak_7: 4690709652035032407
+      Memory Leak_8: -4396701469366937333
+      Memory Leak_9: 713212405457853045
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
