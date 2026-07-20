@@ -1338,6 +1338,7 @@ GameObject:
   - component: {fileID: 465423883}
   - component: {fileID: 465423882}
   - component: {fileID: 465423884}
+  - component: {fileID: 465423885}
   m_Layer: 0
   m_Name: OptionsPanel
   m_TagString: Untagged
@@ -1379,7 +1380,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.24313726, g: 0.2, b: 0.24313726, a: 0.39215687}
+  m_Color: {r: 1, g: 0.6839622, b: 1, a: 0.39215687}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1419,6 +1420,21 @@ MonoBehaviour:
   masterSlider: {fileID: 742349029}
   musicSlider: {fileID: 146920725}
   sfxSlider: {fileID: 800627063}
+--- !u!114 &465423885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 465423880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Outline
+  m_EffectColor: {r: 1, g: 0.68235296, b: 1, a: 0.39215687}
+  m_EffectDistance: {x: 4, y: 4}
+  m_UseGraphicAlpha: 1
 --- !u!1 &466650389
 GameObject:
   m_ObjectHideFlags: 0

@@ -1585,10 +1585,10 @@ RectTransform:
   - {fileID: 1356132960}
   m_Father: {fileID: 1493959112}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.00058555603, y: 0.00016498566}
-  m_SizeDelta: {x: 1039.8, y: 498.58}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &353438633
 MonoBehaviour:
@@ -1621,6 +1621,7 @@ GameObject:
   - component: {fileID: 374508321}
   - component: {fileID: 374508320}
   - component: {fileID: 374508322}
+  - component: {fileID: 374508323}
   m_Layer: 5
   m_Name: OptionsPanel
   m_TagString: Untagged
@@ -1662,7 +1663,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.24313726, g: 0.2, b: 0.24313726, a: 0.39215687}
+  m_Color: {r: 0.98039216, g: 0.69803923, b: 1, a: 0.39215687}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1702,6 +1703,21 @@ MonoBehaviour:
   masterSlider: {fileID: 1868644415}
   musicSlider: {fileID: 702691660}
   sfxSlider: {fileID: 164107779}
+--- !u!114 &374508323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374508318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Outline
+  m_EffectColor: {r: 0.98039216, g: 0.69803923, b: 1, a: 0}
+  m_EffectDistance: {x: 2, y: 2}
+  m_UseGraphicAlpha: 1
 --- !u!1 &375629877
 GameObject:
   m_ObjectHideFlags: 0
@@ -3533,7 +3549,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &726167210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5407,11 +5423,11 @@ RectTransform:
   - {fileID: 1554137339}
   m_Father: {fileID: 353438632}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -0.00000019776053}
-  m_SizeDelta: {x: 1040, y: 498}
-  m_Pivot: {x: 0, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1371077079
 GameObject:
   m_ObjectHideFlags: 0
