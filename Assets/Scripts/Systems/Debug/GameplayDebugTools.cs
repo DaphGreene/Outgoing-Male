@@ -95,7 +95,7 @@ public class GameplayDebugTools : MonoBehaviour
         y += lineHeight;
         GUI.Label(new Rect(x, y, panelRect.width - 20f, lineHeight), $"{toggleHoverKey}: Hover [{hover}]", overlayTextStyle);
         y += lineHeight;
-        GUI.Label(new Rect(x, y, panelRect.width - 20f, lineHeight), $"{resetProgressKey}: Reset HighScore + Stamps", overlayTextStyle);
+        GUI.Label(new Rect(x, y, panelRect.width - 20f, lineHeight), $"{resetProgressKey}: Reset HighScore + Stamps + PB", overlayTextStyle);
         y += lineHeight;
         GUI.Label(new Rect(x, y, panelRect.width - 20f, lineHeight), $"{startRunKey}: Start Run   {toggleOverlayKey}: Toggle Panel", overlayTextStyle);
         y += lineHeight;
@@ -151,9 +151,12 @@ public class GameplayDebugTools : MonoBehaviour
             highScoreHuds[i].Refresh();
 
         if (gameManager != null)
+        {
             gameManager.RefreshHighScoreDisplayFromPrefs();
+            gameManager.ResetSongProgressPersonalBest();
+        }
 
-        Debug.Log("DebugTools: Reset HighScore and Stamp_Count to 0.");
+        Debug.Log("DebugTools: Reset HighScore, Stamp_Count, and SongProgressPersonalBest to 0.");
     }
 
     private void StartRunIfReady()

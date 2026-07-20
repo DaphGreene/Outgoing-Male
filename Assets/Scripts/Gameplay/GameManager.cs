@@ -6,6 +6,8 @@ using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
+    private const string SongProgressPersonalBestKey = "SongProgressPersonalBest";
+
     public enum GameState { Ready, Playing, GameOver }
     public GameState State { get; private set; } = GameState.Ready;
 
@@ -29,6 +31,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Image hitIndicatorImage;
     [SerializeField] private Sprite hitAvailableSprite;
     [SerializeField] private Sprite hitSpentSprite;
+    [SerializeField] private RectTransform songProgressFillRect;
+    [SerializeField] private RectTransform songProgressPersonalBestMarker;
 
     [Header("Player Hits")]
     [SerializeField, Min(1)] private int startingHits = 1;
@@ -49,9 +53,12 @@ public class GameManager : MonoBehaviour
     private bool hasValidReferences = true;
     private CanvasGroup startPromptCanvasGroup;
     private int currentHits;
+    private float runProgressNormalized;
+    private float personalBestProgressNormalized;
 
     private void Awake()
     {
+        personalBestProgressNormalized = PlayerPrefs.GetFloat(SongProgressPersonalBestKey, 0f);
         hasValidReferences = ValidateRequiredReferences();
         if (!hasValidReferences)
         {
@@ -69,11 +76,16 @@ public class GameManager : MonoBehaviour
     {
         if (!hasValidReferences) return;
         UpdateHighScoreText();
+        RefreshSongProgressUi();
+        RefreshSongProgressPersonalBestMarker();
     }
 
     private void Update()
     {
         if (!hasValidReferences) return;
+
+        if (State == GameState.Playing)
+            UpdateRunProgressFromMusic();
 
         // Start input is only valid from the Ready state.
         if (State != GameState.Ready) return;
@@ -97,6 +109,7 @@ public class GameManager : MonoBehaviour
         State = GameState.Ready;
         OnStateChanged?.Invoke(State);
         ResetHits();
+        ResetRunProgress();
 
         // UI
         ConfigureGetReadyPulse();
@@ -138,6 +151,7 @@ public class GameManager : MonoBehaviour
 
         score = 0;
         scoreText.text = score.ToString();
+        ResetRunProgress();
 
         // UI
         if (getReady != null)
@@ -185,6 +199,8 @@ public class GameManager : MonoBehaviour
     {
         if (!hasValidReferences) return;
         if (State == GameState.GameOver) return;
+
+        UpdateRunProgressFromMusic();
 
         State = GameState.GameOver;
         OnStateChanged?.Invoke(State);
@@ -252,6 +268,14 @@ public class GameManager : MonoBehaviour
     {
         if (!hasValidReferences) return;
         UpdateHighScoreText();
+    }
+
+    public void ResetSongProgressPersonalBest()
+    {
+        personalBestProgressNormalized = 0f;
+        PlayerPrefs.DeleteKey(SongProgressPersonalBestKey);
+        PlayerPrefs.Save();
+        RefreshSongProgressPersonalBestMarker();
     }
 
     private bool ValidateRequiredReferences()
@@ -337,6 +361,74 @@ public class GameManager : MonoBehaviour
             hitIndicatorImage.sprite = targetSprite;
 
         hitIndicatorImage.enabled = true;
+    }
+
+    private void ResetRunProgress()
+    {
+        runProgressNormalized = 0f;
+        RefreshSongProgressUi();
+    }
+
+    private void UpdateRunProgressFromMusic()
+    {
+        if (runMusicSource == null || runMusicSource.clip == null)
+            return;
+
+        float clipLength = runMusicSource.clip.length;
+        if (clipLength <= 0f)
+            return;
+
+        SetRunProgressNormalized(runMusicSource.time / clipLength);
+    }
+
+    private void SetRunProgressNormalized(float value)
+    {
+        float clampedValue = Mathf.Clamp01(value);
+        if (Mathf.Approximately(runProgressNormalized, clampedValue))
+            return;
+
+        runProgressNormalized = clampedValue;
+        RefreshSongProgressUi();
+        UpdateSongProgressPersonalBest();
+    }
+
+    private void RefreshSongProgressUi()
+    {
+        if (songProgressFillRect == null)
+            return;
+
+        songProgressFillRect.anchorMin = new Vector2(0f, 0f);
+        songProgressFillRect.anchorMax = new Vector2(runProgressNormalized, 1f);
+        songProgressFillRect.anchoredPosition = Vector2.zero;
+    }
+
+    private void UpdateSongProgressPersonalBest()
+    {
+        if (runProgressNormalized <= personalBestProgressNormalized)
+            return;
+
+        personalBestProgressNormalized = runProgressNormalized;
+        PlayerPrefs.SetFloat(SongProgressPersonalBestKey, personalBestProgressNormalized);
+        PlayerPrefs.Save();
+        RefreshSongProgressPersonalBestMarker();
+    }
+
+    private void RefreshSongProgressPersonalBestMarker()
+    {
+        if (songProgressPersonalBestMarker == null)
+            return;
+
+        bool hasPersonalBest = personalBestProgressNormalized > 0f;
+        if (songProgressPersonalBestMarker.gameObject.activeSelf != hasPersonalBest)
+            songProgressPersonalBestMarker.gameObject.SetActive(hasPersonalBest);
+
+        if (!hasPersonalBest)
+            return;
+
+        float normalizedPosition = Mathf.Clamp01(personalBestProgressNormalized);
+        songProgressPersonalBestMarker.anchorMin = new Vector2(normalizedPosition, 0f);
+        songProgressPersonalBestMarker.anchorMax = new Vector2(normalizedPosition, 1f);
+        songProgressPersonalBestMarker.anchoredPosition = Vector2.zero;
     }
 
     private static bool HasTapStartedThisFrame()
