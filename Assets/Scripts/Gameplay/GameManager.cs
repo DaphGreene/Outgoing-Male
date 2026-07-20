@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Sprite hitSpentSprite;
     [SerializeField] private RectTransform songProgressFillRect;
     [SerializeField] private RectTransform songProgressPersonalBestMarker;
+    [SerializeField] private TMP_Text personalBestToastText;
+    [SerializeField] private CanvasGroup personalBestToastCanvasGroup;
 
     [Header("Player Hits")]
     [SerializeField, Min(1)] private int startingHits = 1;
@@ -46,6 +48,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float getReadyFloatAmplitude = 10f;
     [SerializeField] private float getReadyFloatSpeed = 1.4f;
 
+    [Header("Personal Best Toast")]
+    [SerializeField] private float personalBestToastFadeInDuration = 0.12f;
+    [SerializeField] private float personalBestToastHoldDuration = 4f;
+    [SerializeField] private float personalBestToastFadeOutDuration = 0.5f;
+    [SerializeField] private float personalBestToastFlashSpeed = 4f;
+    [SerializeField] private float personalBestToastFlashMinAlpha = 0.45f;
+    [SerializeField] private float personalBestToastFlashMaxAlpha = 1f;
+    [SerializeField] private float personalBestToastWaveAmplitude = 6f;
+    [SerializeField] private float personalBestToastWaveSpeed = 1.8f;
+    [SerializeField] private float personalBestToastWaveOffsetPerCharacter = 0.45f;
+
     private int score;
     public int Score => score;
     public int CurrentHits => currentHits;
@@ -55,6 +68,9 @@ public class GameManager : MonoBehaviour
     private int currentHits;
     private float runProgressNormalized;
     private float personalBestProgressNormalized;
+    private int runStartingHighScore;
+    private bool hasAnnouncedPersonalBestThisRun;
+    private float personalBestToastShownAtUnscaledTime = -999f;
 
     private void Awake()
     {
@@ -78,6 +94,7 @@ public class GameManager : MonoBehaviour
         UpdateHighScoreText();
         RefreshSongProgressUi();
         RefreshSongProgressPersonalBestMarker();
+        ConfigurePersonalBestToastMotion();
     }
 
     private void Update()
@@ -86,6 +103,8 @@ public class GameManager : MonoBehaviour
 
         if (State == GameState.Playing)
             UpdateRunProgressFromMusic();
+
+        UpdatePersonalBestToast();
 
         // Start input is only valid from the Ready state.
         if (State != GameState.Ready) return;
@@ -110,6 +129,7 @@ public class GameManager : MonoBehaviour
         OnStateChanged?.Invoke(State);
         ResetHits();
         ResetRunProgress();
+        HidePersonalBestToastImmediate();
 
         // UI
         ConfigureGetReadyPulse();
@@ -150,6 +170,8 @@ public class GameManager : MonoBehaviour
         OnStateChanged?.Invoke(State);
 
         score = 0;
+        runStartingHighScore = PlayerPrefs.GetInt("HighScore", 0);
+        hasAnnouncedPersonalBestThisRun = false;
         scoreText.text = score.ToString();
         ResetRunProgress();
 
@@ -230,6 +252,12 @@ public class GameManager : MonoBehaviour
 
         score += amount;
         scoreText.text = score.ToString();
+
+        if (!hasAnnouncedPersonalBestThisRun && runStartingHighScore > 0 && score > runStartingHighScore)
+        {
+            hasAnnouncedPersonalBestThisRun = true;
+            ShowPersonalBestToast();
+        }
 
         if (score > PlayerPrefs.GetInt("HighScore", 0))
         {
@@ -331,13 +359,19 @@ public class GameManager : MonoBehaviour
 
         TMP_Text getReadyText = getReady.GetComponentInChildren<TMP_Text>(true);
         if (getReadyText != null)
+        {
             getReadyText.raycastTarget = false;
 
-        GetReadyPulse pulse = getReady.GetComponent<GetReadyPulse>();
-        if (pulse == null)
-            pulse = getReady.AddComponent<GetReadyPulse>();
+            TmpCharacterWaveMotion waveMotion = getReadyText.GetComponent<TmpCharacterWaveMotion>();
+            if (waveMotion == null)
+                waveMotion = getReadyText.gameObject.AddComponent<TmpCharacterWaveMotion>();
 
-        pulse.SetMotion(getReadyFloatAmplitude, getReadyFloatSpeed);
+            waveMotion.SetMotion(getReadyFloatAmplitude, getReadyFloatSpeed, 0.45f);
+        }
+
+        GetReadyPulse pulse = getReady.GetComponent<GetReadyPulse>();
+        if (pulse != null)
+            pulse.enabled = false;
     }
 
     private void ResetHits()
@@ -431,6 +465,88 @@ public class GameManager : MonoBehaviour
         songProgressPersonalBestMarker.anchoredPosition = Vector2.zero;
     }
 
+    private void ShowPersonalBestToast()
+    {
+        if (personalBestToastText != null)
+            personalBestToastText.text = "New Personal Best!";
+
+        personalBestToastShownAtUnscaledTime = Time.unscaledTime;
+        ConfigurePersonalBestToastMotion();
+
+        if (personalBestToastText != null && !personalBestToastText.gameObject.activeSelf)
+            personalBestToastText.gameObject.SetActive(true);
+    }
+
+    private void HidePersonalBestToastImmediate()
+    {
+        personalBestToastShownAtUnscaledTime = -999f;
+
+        if (personalBestToastCanvasGroup != null)
+            personalBestToastCanvasGroup.alpha = 0f;
+
+        if (personalBestToastText != null && personalBestToastText.gameObject.activeSelf)
+            personalBestToastText.gameObject.SetActive(false);
+    }
+
+    private void UpdatePersonalBestToast()
+    {
+        if (personalBestToastText == null || personalBestToastCanvasGroup == null)
+            return;
+
+        float elapsed = Time.unscaledTime - personalBestToastShownAtUnscaledTime;
+        if (elapsed < 0f)
+        {
+            personalBestToastCanvasGroup.alpha = 0f;
+            if (personalBestToastText.gameObject.activeSelf)
+                personalBestToastText.gameObject.SetActive(false);
+            return;
+        }
+
+        if (!personalBestToastText.gameObject.activeSelf)
+            personalBestToastText.gameObject.SetActive(true);
+
+        float fadeInEnd = personalBestToastFadeInDuration;
+        float holdEnd = fadeInEnd + personalBestToastHoldDuration;
+        float fadeOutEnd = holdEnd + personalBestToastFadeOutDuration;
+
+        if (elapsed <= fadeInEnd && fadeInEnd > 0f)
+        {
+            personalBestToastCanvasGroup.alpha = Mathf.Clamp01(elapsed / fadeInEnd);
+            return;
+        }
+
+        if (elapsed <= holdEnd)
+        {
+            float flashPhase = (Mathf.Sin((elapsed - fadeInEnd) * personalBestToastFlashSpeed * Mathf.PI * 2f) + 1f) * 0.5f;
+            personalBestToastCanvasGroup.alpha = Mathf.Lerp(personalBestToastFlashMinAlpha, personalBestToastFlashMaxAlpha, flashPhase);
+            return;
+        }
+
+        if (elapsed <= fadeOutEnd && personalBestToastFadeOutDuration > 0f)
+        {
+            float fadeOutElapsed = elapsed - holdEnd;
+            personalBestToastCanvasGroup.alpha = 1f - Mathf.Clamp01(fadeOutElapsed / personalBestToastFadeOutDuration);
+            return;
+        }
+
+        HidePersonalBestToastImmediate();
+    }
+
+    private void ConfigurePersonalBestToastMotion()
+    {
+        if (personalBestToastText == null)
+            return;
+
+        TmpCharacterWaveMotion waveMotion = personalBestToastText.GetComponent<TmpCharacterWaveMotion>();
+        if (waveMotion == null)
+            waveMotion = personalBestToastText.gameObject.AddComponent<TmpCharacterWaveMotion>();
+
+        waveMotion.SetMotion(
+            personalBestToastWaveAmplitude,
+            personalBestToastWaveSpeed,
+            personalBestToastWaveOffsetPerCharacter);
+    }
+
     private static bool HasTapStartedThisFrame()
     {
         for (int i = 0; i < Input.touchCount; i++)
@@ -503,5 +619,99 @@ public class GetReadyPulse : MonoBehaviour
     {
         bounceAmplitude = Mathf.Max(0f, amplitude);
         bounceFrequency = Mathf.Max(0f, bounceSpeed);
+    }
+}
+
+[RequireComponent(typeof(TMP_Text))]
+public class TmpCharacterWaveMotion : MonoBehaviour
+{
+    [SerializeField] private float waveAmplitude = 6f;
+    [SerializeField] private float waveFrequency = 1.8f;
+    [SerializeField] private float phaseOffsetPerCharacter = 0.45f;
+
+    private TMP_Text textComponent;
+    private TMP_MeshInfo[] cachedMeshInfo;
+    private string cachedText;
+
+    private void Awake()
+    {
+        textComponent = GetComponent<TMP_Text>();
+        CacheMeshData();
+    }
+
+    private void OnEnable()
+    {
+        if (textComponent == null)
+            textComponent = GetComponent<TMP_Text>();
+
+        CacheMeshData();
+    }
+
+    private void LateUpdate()
+    {
+        if (textComponent == null)
+            return;
+
+        if (cachedMeshInfo == null || cachedMeshInfo.Length == 0 || cachedText != textComponent.text)
+            CacheMeshData();
+
+        textComponent.ForceMeshUpdate();
+        TMP_TextInfo textInfo = textComponent.textInfo;
+
+        if (textInfo.characterCount == 0 || cachedMeshInfo == null || cachedMeshInfo.Length != textInfo.meshInfo.Length)
+            return;
+
+        for (int meshIndex = 0; meshIndex < textInfo.meshInfo.Length; meshIndex++)
+        {
+            var sourceVertices = cachedMeshInfo[meshIndex].vertices;
+            var destinationVertices = textInfo.meshInfo[meshIndex].vertices;
+            Array.Copy(sourceVertices, destinationVertices, sourceVertices.Length);
+        }
+
+        float baseTime = Time.unscaledTime * waveFrequency * Mathf.PI * 2f;
+
+        for (int i = 0; i < textInfo.characterCount; i++)
+        {
+            TMP_CharacterInfo characterInfo = textInfo.characterInfo[i];
+            if (!characterInfo.isVisible)
+                continue;
+
+            int materialIndex = characterInfo.materialReferenceIndex;
+            int vertexIndex = characterInfo.vertexIndex;
+            Vector3[] vertices = textInfo.meshInfo[materialIndex].vertices;
+
+            Vector3 midpoint = (vertices[vertexIndex] + vertices[vertexIndex + 2]) * 0.5f;
+            float waveOffset = Mathf.Sin(baseTime + (i * phaseOffsetPerCharacter)) * waveAmplitude;
+            Vector3 offset = new(0f, waveOffset, 0f);
+
+            vertices[vertexIndex] = cachedMeshInfo[materialIndex].vertices[vertexIndex] + offset;
+            vertices[vertexIndex + 1] = cachedMeshInfo[materialIndex].vertices[vertexIndex + 1] + offset;
+            vertices[vertexIndex + 2] = cachedMeshInfo[materialIndex].vertices[vertexIndex + 2] + offset;
+            vertices[vertexIndex + 3] = cachedMeshInfo[materialIndex].vertices[vertexIndex + 3] + offset;
+        }
+
+        for (int meshIndex = 0; meshIndex < textInfo.meshInfo.Length; meshIndex++)
+        {
+            textInfo.meshInfo[meshIndex].mesh.vertices = textInfo.meshInfo[meshIndex].vertices;
+            textComponent.UpdateGeometry(textInfo.meshInfo[meshIndex].mesh, meshIndex);
+        }
+    }
+
+    public void SetMotion(float amplitude, float speed, float characterPhaseOffset)
+    {
+        waveAmplitude = Mathf.Max(0f, amplitude);
+        waveFrequency = Mathf.Max(0f, speed);
+        phaseOffsetPerCharacter = Mathf.Max(0f, characterPhaseOffset);
+        CacheMeshData();
+    }
+
+    private void CacheMeshData()
+    {
+        if (textComponent == null)
+            return;
+
+        textComponent.ForceMeshUpdate();
+        cachedText = textComponent.text;
+        cachedMeshInfo = textComponent.textInfo.CopyMeshInfoVertexData();
     }
 }
