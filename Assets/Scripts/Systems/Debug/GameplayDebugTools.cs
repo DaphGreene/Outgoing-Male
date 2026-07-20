@@ -19,7 +19,7 @@ public class GameplayDebugTools : MonoBehaviour
     [SerializeField] private KeyCode toggleOverlayKey = KeyCode.F8;
 
     [Header("UI")]
-    [SerializeField] private bool showOverlay = true;
+    [SerializeField] private bool showOverlay = false;
     [SerializeField] private OverlayCorner overlayCorner = OverlayCorner.LowerLeft;
     [SerializeField] private Vector2 overlayMargin = new(10f, 10f);
     [SerializeField] private Vector2 overlaySize = new(320f, 136f);

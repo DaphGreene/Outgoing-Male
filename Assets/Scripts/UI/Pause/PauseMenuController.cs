@@ -20,6 +20,7 @@ public class PauseMenuController : MonoBehaviour
 
     private bool isPaused;
     private bool gameOverShown;
+    private bool returnToGameOverFromOptions;
 
     private void Start()
     {
@@ -107,11 +108,25 @@ public class PauseMenuController : MonoBehaviour
 
     public void OnOptionsPressed()
     {
+        returnToGameOverFromOptions = gameManager != null && gameManager.HasGameEnded;
         pauseRootPanel.SetActive(false);
+        gameOverPanel.SetActive(false);
         optionsPanel.SetActive(true);
     }
 
-    public void OnBackFromOptionsPressed() => ShowRoot();
+    public void OnBackFromOptionsPressed()
+    {
+        if (returnToGameOverFromOptions)
+        {
+            returnToGameOverFromOptions = false;
+            if (pauseRootPanel != null) pauseRootPanel.SetActive(false);
+            if (optionsPanel != null) optionsPanel.SetActive(false);
+            if (gameOverPanel != null) gameOverPanel.SetActive(true);
+            return;
+        }
+
+        ShowRoot();
+    }
 
     public void OnRestartPressed()
     {
@@ -141,6 +156,7 @@ public class PauseMenuController : MonoBehaviour
     private void ShowRoot()
     {
         bool isGameOver = gameManager != null && gameManager.HasGameEnded;
+        returnToGameOverFromOptions = false;
 
         if (pauseRootPanel != null) pauseRootPanel.SetActive(!isGameOver);
         if (optionsPanel != null) optionsPanel.SetActive(false);
@@ -149,6 +165,7 @@ public class PauseMenuController : MonoBehaviour
 
     private void ShowPauseRoot()
     {
+        returnToGameOverFromOptions = false;
         if (pauseRootPanel != null) pauseRootPanel.SetActive(true);
         if (optionsPanel != null) optionsPanel.SetActive(false);
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
@@ -159,6 +176,7 @@ public class PauseMenuController : MonoBehaviour
         isPaused = true;
         Time.timeScale = 0f;
         menuContainer.SetActive(true);
+        returnToGameOverFromOptions = false;
 
         if (pauseRootPanel != null) pauseRootPanel.SetActive(false);
         if (optionsPanel != null) optionsPanel.SetActive(false);

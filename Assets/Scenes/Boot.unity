@@ -164,6 +164,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bootstrapper
   firstScene: MainMenu
+  splashLogoSprite: {fileID: 21300000, guid: a26bb9366c3f44feeadffbf69e64d9f6, type: 3}
+  logoSize: {x: 320, y: 320}
+  logoFadeInDuration: 1
+  logoHoldDuration: 1
+  logoFadeOutDuration: 1
+  sceneFadeOutDuration: 1
 --- !u!1 &634901846
 GameObject:
   m_ObjectHideFlags: 0

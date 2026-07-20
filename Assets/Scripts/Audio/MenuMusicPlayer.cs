@@ -28,7 +28,21 @@ public class MenuMusicPlayer : MonoBehaviour
 
     private void Start()
     {
+        if (Bootstrapper.IsBootSequenceActive)
+            return;
+
         ResumeMenuMusic();
+    }
+
+    public void PlayFromStart(float volume = 1f)
+    {
+        if (musicSource == null)
+            return;
+
+        musicSource.volume = Mathf.Clamp01(volume);
+        musicSource.Stop();
+        musicSource.time = 0f;
+        musicSource.Play();
     }
 
     public void ResumeMenuMusic()
@@ -41,6 +55,14 @@ public class MenuMusicPlayer : MonoBehaviour
 
         if (!musicSource.isPlaying)
             musicSource.Play();
+    }
+
+    public void SetVolume(float volume)
+    {
+        if (musicSource == null)
+            return;
+
+        musicSource.volume = Mathf.Clamp01(volume);
     }
 
     public void PauseMenuMusic()
