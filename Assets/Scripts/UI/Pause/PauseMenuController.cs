@@ -89,6 +89,8 @@ public class PauseMenuController : MonoBehaviour
     public void Pause()
     {
         isPaused = true;
+        if (gameManager != null)
+            gameManager.HandlePauseMenuOpened();
         Time.timeScale = 0f;
         menuContainer.SetActive(true);
         ShowPauseRoot();
@@ -101,6 +103,8 @@ public class PauseMenuController : MonoBehaviour
         isPaused = false;
         menuContainer.SetActive(false);
 
+        if (gameManager != null)
+            gameManager.HandlePauseMenuClosed();
         Time.timeScale = 1f;
     }
 
@@ -150,6 +154,8 @@ public class PauseMenuController : MonoBehaviour
     {
         isPaused = false;
         menuContainer.SetActive(false);
+        if (gameManager != null)
+            gameManager.HandlePauseMenuClosed();
         Time.timeScale = 1f;
     }
 

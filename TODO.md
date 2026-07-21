@@ -16,11 +16,15 @@
 - [ ] Make clouds and street parallax start on game start
 - [ ] Create death animation (rapid flap + fall offscreen)
 - [ ] Add panel sprites behind menu items
+- [ ] Do a focused profiler pass on intermittent gameplay stutter/hitching
 
 ## 🧩 Tier 3 – Light Progression (Optional for v0.1)
 - [ ] Add temp menu/image to Character Select screen with single blacked-out unlockable palette swap
 - [ ] Set point threshold for unlocking first cosmetic and test to see if unlock works properly
 - [x] Create custom button sprite to use across UI screens
+- [ ] Decide lap-completion reward behavior for unlockable bomb move
+- [ ] Prototype bomb move that clears all onscreen obstacles
+- [ ] Decide whether bomb move is once-per-run, cooldown-based, or upgradeable through meta progression
 
 ## 🚀 Tier 4 – Post‑Launch Systems
 - [x] Create `StampDefinition` and `StampCatalog` data scripts

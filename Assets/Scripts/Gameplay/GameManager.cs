@@ -7,12 +7,15 @@ using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
-    private const string SongProgressPersonalBestKey = "SongProgressPersonalBest";
+    private const string SongProgressBestKey = "SongProgressPersonalBest";
+    private const string SongProgressBestLapKey = "SongProgressPersonalBestLap";
+    private const string SongProgressBestLapProgressKey = "SongProgressPersonalBestLapProgress";
 
     private enum ToastKind
     {
         PersonalBest,
-        NewStamp
+        NewStamp,
+        LapComplete
     }
 
     private readonly struct ToastRequest
@@ -51,7 +54,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Sprite hitAvailableSprite;
     [SerializeField] private Sprite hitSpentSprite;
     [SerializeField] private RectTransform songProgressFillRect;
-    [SerializeField] private RectTransform songProgressPersonalBestMarker;
+    [SerializeField] private RectTransform songProgressBestGuideRect;
+    [FormerlySerializedAs("songProgressPersonalBestMarker")]
+    [SerializeField] private RectTransform songProgressBestMarker;
+    [SerializeField] private float songProgressBestMarkerYOffset = 0f;
+    [SerializeField] private TMP_Text lapCounterText;
+    [SerializeField] private TMP_Text songProgressPercentText;
     [SerializeField] private TMP_Text personalBestToastText;
     [SerializeField] private CanvasGroup personalBestToastCanvasGroup;
     [SerializeField] private RectTransform sharedToastRect;
@@ -98,6 +106,21 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float newStampToastFontSizeMax = 56f;
     [SerializeField] private Vector2 newStampToastSize = new(560f, 92f);
 
+    [Header("Lap Toast")]
+    [SerializeField] private float lapToastFadeInDuration = 0.12f;
+    [SerializeField] private float lapToastHoldDuration = 2.2f;
+    [SerializeField] private float lapToastFadeOutDuration = 0.45f;
+    [SerializeField] private float lapToastFlashSpeed = 2f;
+    [SerializeField] private float lapToastFlashMinAlpha = 0.55f;
+    [SerializeField] private float lapToastFlashMaxAlpha = 1f;
+    [SerializeField] private float lapToastWaveAmplitude = 4f;
+    [SerializeField] private float lapToastWaveSpeed = 1.4f;
+    [SerializeField] private float lapToastWaveOffsetPerCharacter = 0.3f;
+    [SerializeField] private Color lapToastColor = new(0.99215686f, 0.4745098f, 0.8901961f, 1f);
+    [SerializeField] private float lapToastFontSize = 44f;
+    [SerializeField] private float lapToastFontSizeMax = 52f;
+    [SerializeField] private Vector2 lapToastSize = new(520f, 76f);
+
     private int score;
     public int Score => score;
     public int CurrentHits => currentHits;
@@ -105,8 +128,13 @@ public class GameManager : MonoBehaviour
     private bool hasValidReferences = true;
     private CanvasGroup startPromptCanvasGroup;
     private int currentHits;
+    private int currentLapCount;
     private float runProgressNormalized;
-    private float personalBestProgressNormalized;
+    private float previousRunMusicTimeSeconds = -1f;
+    private int songProgressBestLapCount;
+    private float songProgressBestNormalized;
+    private bool hasPendingSongProgressBestSave;
+    private bool suppressSongProgressBestUntilNextRun;
     private int runStartingHighScore;
     private bool hasAnnouncedPersonalBestThisRun;
     private float activeToastShownAtUnscaledTime = -999f;
@@ -115,7 +143,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        personalBestProgressNormalized = PlayerPrefs.GetFloat(SongProgressPersonalBestKey, 0f);
+        LoadSongProgressBest();
         hasValidReferences = ValidateRequiredReferences();
         if (!hasValidReferences)
         {
@@ -133,8 +161,9 @@ public class GameManager : MonoBehaviour
     {
         if (!hasValidReferences) return;
         UpdateHighScoreText();
+        RefreshLapCounterUi();
         RefreshSongProgressUi();
-        RefreshSongProgressPersonalBestMarker();
+        RefreshSongProgressBestMarker();
         ConfigureSharedToastMotion(ToastKind.PersonalBest);
     }
 
@@ -143,7 +172,10 @@ public class GameManager : MonoBehaviour
         if (!hasValidReferences) return;
 
         if (State == GameState.Playing)
+        {
             UpdateRunProgressFromMusic();
+            RefreshSongProgressBestMarker();
+        }
 
         UpdateSharedToast();
 
@@ -169,7 +201,9 @@ public class GameManager : MonoBehaviour
         State = GameState.Ready;
         OnStateChanged?.Invoke(State);
         ResetHits();
+        ResetLapState();
         ResetRunProgress();
+        RefreshSongProgressBestMarker();
         HideSharedToastImmediate(true);
 
         // UI
@@ -213,8 +247,11 @@ public class GameManager : MonoBehaviour
         score = 0;
         runStartingHighScore = PlayerPrefs.GetInt("HighScore", 0);
         hasAnnouncedPersonalBestThisRun = false;
+        suppressSongProgressBestUntilNextRun = false;
+        ResetLapState();
         scoreText.text = score.ToString();
         ResetRunProgress();
+        RefreshSongProgressBestMarker();
 
         // UI
         if (getReady != null)
@@ -247,6 +284,8 @@ public class GameManager : MonoBehaviour
     {
         if (!hasValidReferences) return;
 
+        SaveSongProgressBestIfDirty();
+
         score = 0;
         scoreText.text = score.ToString();
         Time.timeScale = 1f;
@@ -264,6 +303,7 @@ public class GameManager : MonoBehaviour
         if (State == GameState.GameOver) return;
 
         UpdateRunProgressFromMusic();
+        SaveSongProgressBestIfDirty();
 
         State = GameState.GameOver;
         OnStateChanged?.Invoke(State);
@@ -284,6 +324,30 @@ public class GameManager : MonoBehaviour
 
         if (MenuMusicPlayer.Instance != null)
             MenuMusicPlayer.Instance.ResumeMenuMusic();
+    }
+
+    public void HandlePauseMenuOpened()
+    {
+        if (!hasValidReferences) return;
+        if (!IsPlaying) return;
+
+        if (runMusicSource != null && runMusicSource.isPlaying)
+            runMusicSource.Pause();
+
+        if (MenuMusicPlayer.Instance != null)
+            MenuMusicPlayer.Instance.ResumeMenuMusic();
+    }
+
+    public void HandlePauseMenuClosed()
+    {
+        if (!hasValidReferences) return;
+        if (!IsPlaying) return;
+
+        if (MenuMusicPlayer.Instance != null)
+            MenuMusicPlayer.Instance.PauseMenuMusic();
+
+        if (runMusicSource != null)
+            runMusicSource.UnPause();
     }
 
     public void IncreaseScore(int amount = 1)
@@ -339,12 +403,71 @@ public class GameManager : MonoBehaviour
         UpdateHighScoreText();
     }
 
-    public void ResetSongProgressPersonalBest()
+    public void DebugSetScore(int value)
     {
-        personalBestProgressNormalized = 0f;
-        PlayerPrefs.DeleteKey(SongProgressPersonalBestKey);
+        if (!hasValidReferences) return;
+
+        score = Mathf.Max(0, value);
+        scoreText.text = score.ToString();
+    }
+
+    public void DebugSetPlaybackSpeed(float speed)
+    {
+        float clampedSpeed = Mathf.Max(0.1f, speed);
+        Time.timeScale = clampedSpeed;
+
+        if (runMusicSource != null)
+            runMusicSource.pitch = clampedSpeed;
+    }
+
+    public void DebugSetLapAndProgress(int lapCount, float normalizedProgress)
+    {
+        if (!hasValidReferences) return;
+
+        currentLapCount = Mathf.Max(0, lapCount);
+        float targetMusicTimeSeconds = ResolveMusicTimeFromNormalizedProgress(normalizedProgress);
+        previousRunMusicTimeSeconds = targetMusicTimeSeconds;
+
+        if (runMusicSource != null && runMusicSource.clip != null)
+            runMusicSource.time = Mathf.Clamp(targetMusicTimeSeconds, 0f, Mathf.Max(0f, runMusicSource.clip.length - 0.01f));
+
+        RefreshLapCounterUi();
+        SetRunProgressNormalized(normalizedProgress);
+        RefreshSongProgressBestMarker();
+    }
+
+    public void DebugSetSongProgressBest(int lapCount, float normalizedProgress)
+    {
+        songProgressBestLapCount = Mathf.Max(0, lapCount);
+        songProgressBestNormalized = Mathf.Clamp01(normalizedProgress);
+        PlayerPrefs.SetInt(SongProgressBestLapKey, songProgressBestLapCount);
+        PlayerPrefs.SetFloat(SongProgressBestKey, songProgressBestNormalized);
+        PlayerPrefs.SetFloat(SongProgressBestLapProgressKey, songProgressBestNormalized);
         PlayerPrefs.Save();
-        RefreshSongProgressPersonalBestMarker();
+        RefreshSongProgressBestMarker();
+    }
+
+    public int DebugGetCurrentLapCount() => currentLapCount;
+
+    public float DebugGetRunProgressNormalized() => runProgressNormalized;
+
+    public int DebugGetSongProgressBestLapCount() => songProgressBestLapCount;
+
+    public float DebugGetSongProgressBestNormalized() => songProgressBestNormalized;
+
+    public float DebugGetSongProgressMarkerX() => songProgressBestMarker != null ? songProgressBestMarker.localPosition.x : float.NaN;
+
+    public void ResetSongProgressBest()
+    {
+        songProgressBestLapCount = 0;
+        songProgressBestNormalized = 0f;
+        hasPendingSongProgressBestSave = false;
+        suppressSongProgressBestUntilNextRun = true;
+        PlayerPrefs.DeleteKey(SongProgressBestKey);
+        PlayerPrefs.DeleteKey(SongProgressBestLapKey);
+        PlayerPrefs.DeleteKey(SongProgressBestLapProgressKey);
+        PlayerPrefs.Save();
+        RefreshSongProgressBestMarker();
     }
 
     public void ShowNewStampCollectedToast(string stampDisplayName)
@@ -353,6 +476,11 @@ public class GameManager : MonoBehaviour
             ? "New stamp collected!"
             : $"New stamp collected!\n{stampDisplayName}";
         EnqueueToast(ToastKind.NewStamp, message);
+    }
+
+    private void ShowLapCompleteToast()
+    {
+        EnqueueToast(ToastKind.LapComplete, $"Lap {currentLapCount} Complete!");
     }
 
     private bool ValidateRequiredReferences()
@@ -387,6 +515,34 @@ public class GameManager : MonoBehaviour
 
         bool isMobile = Application.isMobilePlatform || Input.touchSupported;
         startPromptText.text = isMobile ? "Tap to Flap" : "Click/Space to Flap";
+    }
+
+    private void LoadSongProgressBest()
+    {
+        if (PlayerPrefs.HasKey(SongProgressBestLapKey) || PlayerPrefs.HasKey(SongProgressBestLapProgressKey))
+        {
+            songProgressBestLapCount = Mathf.Max(0, PlayerPrefs.GetInt(SongProgressBestLapKey, 0));
+            songProgressBestNormalized = Mathf.Clamp01(PlayerPrefs.GetFloat(SongProgressBestLapProgressKey, 0f));
+            return;
+        }
+
+        songProgressBestLapCount = 0;
+        songProgressBestNormalized = Mathf.Clamp01(PlayerPrefs.GetFloat(SongProgressBestKey, 0f));
+    }
+
+    private void ResetLapState()
+    {
+        currentLapCount = 0;
+        previousRunMusicTimeSeconds = -1f;
+        RefreshLapCounterUi();
+    }
+
+    private void RefreshLapCounterUi()
+    {
+        if (lapCounterText == null)
+            return;
+
+        lapCounterText.text = $"Lap {currentLapCount + 1}";
     }
 
     private void SetupStartScreenUi()
@@ -452,16 +608,30 @@ public class GameManager : MonoBehaviour
         RefreshSongProgressUi();
     }
 
+    private float ResolveMusicTimeFromNormalizedProgress(float normalizedProgress)
+    {
+        if (runMusicSource == null || runMusicSource.clip == null)
+            return -1f;
+
+        return Mathf.Clamp01(normalizedProgress) * runMusicSource.clip.length;
+    }
+
     private void UpdateRunProgressFromMusic()
     {
         if (runMusicSource == null || runMusicSource.clip == null)
             return;
 
+        float currentMusicTimeSeconds = runMusicSource.time;
+        if (previousRunMusicTimeSeconds >= 0f && currentMusicTimeSeconds + 0.05f < previousRunMusicTimeSeconds)
+            HandleLapCompleted();
+
+        previousRunMusicTimeSeconds = currentMusicTimeSeconds;
+
         float clipLength = runMusicSource.clip.length;
         if (clipLength <= 0f)
             return;
 
-        SetRunProgressNormalized(runMusicSource.time / clipLength);
+        SetRunProgressNormalized(currentMusicTimeSeconds / clipLength);
     }
 
     private void SetRunProgressNormalized(float value)
@@ -472,7 +642,7 @@ public class GameManager : MonoBehaviour
 
         runProgressNormalized = clampedValue;
         RefreshSongProgressUi();
-        UpdateSongProgressPersonalBest();
+        UpdateSongProgressBest();
     }
 
     private void RefreshSongProgressUi()
@@ -483,40 +653,79 @@ public class GameManager : MonoBehaviour
         songProgressFillRect.anchorMin = new Vector2(0f, 0f);
         songProgressFillRect.anchorMax = new Vector2(runProgressNormalized, 1f);
         songProgressFillRect.anchoredPosition = Vector2.zero;
+
+        if (songProgressPercentText != null)
+            songProgressPercentText.text = $"{Mathf.RoundToInt(runProgressNormalized * 100f)}%";
     }
 
-    private void UpdateSongProgressPersonalBest()
+    private void UpdateSongProgressBest()
     {
-        if (runProgressNormalized <= personalBestProgressNormalized)
+        if (suppressSongProgressBestUntilNextRun)
             return;
 
-        personalBestProgressNormalized = runProgressNormalized;
-        PlayerPrefs.SetFloat(SongProgressPersonalBestKey, personalBestProgressNormalized);
+        bool isNewBestLap = currentLapCount > songProgressBestLapCount;
+        bool isFurtherInSameBestLap = currentLapCount == songProgressBestLapCount && runProgressNormalized > songProgressBestNormalized;
+        if (!isNewBestLap && !isFurtherInSameBestLap)
+            return;
+
+        songProgressBestLapCount = currentLapCount;
+        songProgressBestNormalized = runProgressNormalized;
+        PlayerPrefs.SetInt(SongProgressBestLapKey, songProgressBestLapCount);
+        PlayerPrefs.SetFloat(SongProgressBestKey, songProgressBestNormalized);
+        PlayerPrefs.SetFloat(SongProgressBestLapProgressKey, songProgressBestNormalized);
+        hasPendingSongProgressBestSave = true;
+        RefreshLapCounterUi();
+        RefreshSongProgressBestMarker();
+    }
+
+    private void SaveSongProgressBestIfDirty()
+    {
+        if (!hasPendingSongProgressBestSave)
+            return;
+
         PlayerPrefs.Save();
-        RefreshSongProgressPersonalBestMarker();
+        hasPendingSongProgressBestSave = false;
     }
 
-    private void RefreshSongProgressPersonalBestMarker()
+    private void RefreshSongProgressBestMarker()
     {
-        if (songProgressPersonalBestMarker == null)
+        if (songProgressBestGuideRect == null || songProgressBestMarker == null)
             return;
 
-        bool hasPersonalBest = personalBestProgressNormalized > 0f;
-        if (songProgressPersonalBestMarker.gameObject.activeSelf != hasPersonalBest)
-            songProgressPersonalBestMarker.gameObject.SetActive(hasPersonalBest);
+        bool shouldShowMarker = currentLapCount >= songProgressBestLapCount;
+        if (songProgressBestMarker.gameObject.activeSelf != shouldShowMarker)
+            songProgressBestMarker.gameObject.SetActive(shouldShowMarker);
 
-        if (!hasPersonalBest)
+        if (!shouldShowMarker)
             return;
 
-        float normalizedPosition = Mathf.Clamp01(personalBestProgressNormalized);
-        songProgressPersonalBestMarker.anchorMin = new Vector2(normalizedPosition, 0f);
-        songProgressPersonalBestMarker.anchorMax = new Vector2(normalizedPosition, 1f);
-        songProgressPersonalBestMarker.anchoredPosition = Vector2.zero;
+        float normalizedPosition = Mathf.Clamp01(songProgressBestNormalized);
+        songProgressBestGuideRect.anchorMin = new Vector2(0f, 0f);
+        songProgressBestGuideRect.anchorMax = new Vector2(normalizedPosition, 1f);
+        songProgressBestGuideRect.anchoredPosition = Vector2.zero;
+        songProgressBestGuideRect.sizeDelta = Vector2.zero;
+
+        songProgressBestMarker.anchorMin = new Vector2(1f, 0.5f);
+        songProgressBestMarker.anchorMax = new Vector2(1f, 0.5f);
+        songProgressBestMarker.pivot = new Vector2(0.5f, 0.5f);
+        songProgressBestMarker.anchoredPosition = new Vector2(0f, songProgressBestMarkerYOffset);
+    }
+
+    private void HandleLapCompleted()
+    {
+        SetRunProgressNormalized(1f);
+
+        currentLapCount += 1;
+        RefreshLapCounterUi();
+
+        // Entering the next lap means the local progress marker starts fresh at 0 for this rotation.
+        SetRunProgressNormalized(0f);
+        ShowLapCompleteToast();
     }
 
     private void ShowPersonalBestToast()
     {
-        EnqueueToast(ToastKind.PersonalBest, "New Personal Best!");
+        EnqueueToast(ToastKind.PersonalBest, "New High Score!");
     }
 
     private void HideSharedToastImmediate(bool clearQueue)
@@ -641,43 +850,101 @@ public class GameManager : MonoBehaviour
     }
 
     private float GetActiveToastFadeInDuration() =>
-        activeToastKind == ToastKind.PersonalBest ? personalBestToastFadeInDuration : newStampToastFadeInDuration;
+        activeToastKind switch
+        {
+            ToastKind.PersonalBest => personalBestToastFadeInDuration,
+            ToastKind.NewStamp => newStampToastFadeInDuration,
+            _ => lapToastFadeInDuration
+        };
 
     private float GetActiveToastHoldDuration() =>
-        activeToastKind == ToastKind.PersonalBest ? personalBestToastHoldDuration : newStampToastHoldDuration;
+        activeToastKind switch
+        {
+            ToastKind.PersonalBest => personalBestToastHoldDuration,
+            ToastKind.NewStamp => newStampToastHoldDuration,
+            _ => lapToastHoldDuration
+        };
 
     private float GetActiveToastFadeOutDuration() =>
-        activeToastKind == ToastKind.PersonalBest ? personalBestToastFadeOutDuration : newStampToastFadeOutDuration;
+        activeToastKind switch
+        {
+            ToastKind.PersonalBest => personalBestToastFadeOutDuration,
+            ToastKind.NewStamp => newStampToastFadeOutDuration,
+            _ => lapToastFadeOutDuration
+        };
 
     private float GetActiveToastFlashSpeed() =>
-        activeToastKind == ToastKind.PersonalBest ? personalBestToastFlashSpeed : newStampToastFlashSpeed;
+        activeToastKind switch
+        {
+            ToastKind.PersonalBest => personalBestToastFlashSpeed,
+            ToastKind.NewStamp => newStampToastFlashSpeed,
+            _ => lapToastFlashSpeed
+        };
 
     private float GetActiveToastFlashMinAlpha() =>
-        activeToastKind == ToastKind.PersonalBest ? personalBestToastFlashMinAlpha : newStampToastFlashMinAlpha;
+        activeToastKind switch
+        {
+            ToastKind.PersonalBest => personalBestToastFlashMinAlpha,
+            ToastKind.NewStamp => newStampToastFlashMinAlpha,
+            _ => lapToastFlashMinAlpha
+        };
 
     private float GetActiveToastFlashMaxAlpha() =>
-        activeToastKind == ToastKind.PersonalBest ? personalBestToastFlashMaxAlpha : newStampToastFlashMaxAlpha;
+        activeToastKind switch
+        {
+            ToastKind.PersonalBest => personalBestToastFlashMaxAlpha,
+            ToastKind.NewStamp => newStampToastFlashMaxAlpha,
+            _ => lapToastFlashMaxAlpha
+        };
 
-    private float GetToastWaveAmplitude(ToastKind toastKind) =>
-        toastKind == ToastKind.PersonalBest ? personalBestToastWaveAmplitude : newStampToastWaveAmplitude;
+    private float GetToastWaveAmplitude(ToastKind toastKind) => toastKind switch
+    {
+        ToastKind.PersonalBest => personalBestToastWaveAmplitude,
+        ToastKind.NewStamp => newStampToastWaveAmplitude,
+        _ => lapToastWaveAmplitude
+    };
 
-    private float GetToastWaveSpeed(ToastKind toastKind) =>
-        toastKind == ToastKind.PersonalBest ? personalBestToastWaveSpeed : newStampToastWaveSpeed;
+    private float GetToastWaveSpeed(ToastKind toastKind) => toastKind switch
+    {
+        ToastKind.PersonalBest => personalBestToastWaveSpeed,
+        ToastKind.NewStamp => newStampToastWaveSpeed,
+        _ => lapToastWaveSpeed
+    };
 
-    private float GetToastWaveOffsetPerCharacter(ToastKind toastKind) =>
-        toastKind == ToastKind.PersonalBest ? personalBestToastWaveOffsetPerCharacter : newStampToastWaveOffsetPerCharacter;
+    private float GetToastWaveOffsetPerCharacter(ToastKind toastKind) => toastKind switch
+    {
+        ToastKind.PersonalBest => personalBestToastWaveOffsetPerCharacter,
+        ToastKind.NewStamp => newStampToastWaveOffsetPerCharacter,
+        _ => lapToastWaveOffsetPerCharacter
+    };
 
-    private Color GetToastColor(ToastKind toastKind) =>
-        toastKind == ToastKind.PersonalBest ? personalBestToastColor : newStampToastColor;
+    private Color GetToastColor(ToastKind toastKind) => toastKind switch
+    {
+        ToastKind.PersonalBest => personalBestToastColor,
+        ToastKind.NewStamp => newStampToastColor,
+        _ => lapToastColor
+    };
 
-    private float GetToastFontSize(ToastKind toastKind) =>
-        toastKind == ToastKind.PersonalBest ? personalBestToastFontSize : newStampToastFontSize;
+    private float GetToastFontSize(ToastKind toastKind) => toastKind switch
+    {
+        ToastKind.PersonalBest => personalBestToastFontSize,
+        ToastKind.NewStamp => newStampToastFontSize,
+        _ => lapToastFontSize
+    };
 
-    private float GetToastFontSizeMax(ToastKind toastKind) =>
-        toastKind == ToastKind.PersonalBest ? personalBestToastFontSizeMax : newStampToastFontSizeMax;
+    private float GetToastFontSizeMax(ToastKind toastKind) => toastKind switch
+    {
+        ToastKind.PersonalBest => personalBestToastFontSizeMax,
+        ToastKind.NewStamp => newStampToastFontSizeMax,
+        _ => lapToastFontSizeMax
+    };
 
-    private Vector2 GetToastSize(ToastKind toastKind) =>
-        toastKind == ToastKind.PersonalBest ? personalBestToastSize : newStampToastSize;
+    private Vector2 GetToastSize(ToastKind toastKind) => toastKind switch
+    {
+        ToastKind.PersonalBest => personalBestToastSize,
+        ToastKind.NewStamp => newStampToastSize,
+        _ => lapToastSize
+    };
 
     private static bool HasTapStartedThisFrame()
     {
@@ -714,6 +981,17 @@ public class GameManager : MonoBehaviour
 
         float phase = (Mathf.Sin(Time.unscaledTime * startPromptBlinkSpeed * Mathf.PI * 2f) + 1f) * 0.5f;
         startPromptCanvasGroup.alpha = Mathf.Lerp(startPromptMinAlpha, startPromptMaxAlpha, phase);
+    }
+
+    private void OnApplicationPause(bool pauseStatus)
+    {
+        if (pauseStatus)
+            SaveSongProgressBestIfDirty();
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveSongProgressBestIfDirty();
     }
 }
 
