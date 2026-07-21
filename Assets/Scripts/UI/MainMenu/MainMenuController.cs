@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -33,6 +34,7 @@ public class MainMenuController : MonoBehaviour
         mainMenuPanel.SetActive(false);
         optionsPanel.SetActive(false);
         characterSelectPanel.SetActive(true);
+        StartCoroutine(RebuildCharacterSelectLayout());
     }
 
     public void OnBackToMainMenuPressed()
@@ -51,5 +53,24 @@ public class MainMenuController : MonoBehaviour
         mainMenuPanel.SetActive(true);
         optionsPanel.SetActive(false);
         characterSelectPanel.SetActive(false);
+    }
+
+    private System.Collections.IEnumerator RebuildCharacterSelectLayout()
+    {
+        yield return null;
+
+        if (characterSelectPanel == null)
+            yield break;
+
+        Canvas.ForceUpdateCanvases();
+
+        RectTransform[] rectTransforms = characterSelectPanel.GetComponentsInChildren<RectTransform>(true);
+        for (int i = rectTransforms.Length - 1; i >= 0; i--)
+        {
+            if (rectTransforms[i] != null)
+                LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransforms[i]);
+        }
+
+        Canvas.ForceUpdateCanvases();
     }
 }

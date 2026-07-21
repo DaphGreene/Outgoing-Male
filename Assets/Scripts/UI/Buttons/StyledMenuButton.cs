@@ -57,6 +57,29 @@ public class StyledMenuButton : MonoBehaviour, IPointerEnterHandler, IPointerExi
         UpdateVisualState();
     }
 
+    public void RefreshVisualState()
+    {
+        UpdateVisualState();
+    }
+
+    public void SetDisabledColors(Color graphicColor, Color textColor)
+    {
+        disabledGraphicColor = graphicColor;
+        disabledTextColor = textColor;
+    }
+
+    public void CaptureCurrentTextPosition()
+    {
+        CacheReferences();
+
+        if (buttonTextRect == null)
+            return;
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
+        originalTextAnchoredPosition = buttonTextRect.anchoredPosition;
+        hasCachedTextPosition = true;
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         isPointerOver = true;

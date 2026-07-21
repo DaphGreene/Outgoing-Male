@@ -8,8 +8,12 @@ public class Player : MonoBehaviour
     public Sprite[] sprites;
     [SerializeField] private Sprite[] blueEnvelopeSprites;
     [SerializeField] private Sprite[] greenEnvelopeSprites;
+    [SerializeField] private int defaultIdleSpriteIndex;
+    [SerializeField] private int blueIdleSpriteIndex;
+    [SerializeField] private int greenIdleSpriteIndex;
     private Sprite[] defaultSprites;
     private Sprite[] activeSprites;
+    private int activeIdleSpriteIndex;
     private int spriteIndex;
     private Vector3 direction;
     private Vector3 startPosition;
@@ -61,9 +65,9 @@ public class Player : MonoBehaviour
         transform.position = startPosition;
         direction = Vector3.zero;
         debugAutoFlapTimer = 0f;
-        spriteIndex = 0;
+        spriteIndex = GetClampedIdleSpriteIndex(activeSprites, activeIdleSpriteIndex);
         if (activeSprites != null && activeSprites.Length > 0 && spriteRenderer != null)
-            spriteRenderer.sprite = activeSprites[0];
+            spriteRenderer.sprite = activeSprites[spriteIndex];
     }
 
     public void SetFrozen(bool frozen)
@@ -160,6 +164,7 @@ public class Player : MonoBehaviour
             blueEnvelopeSprites != null && blueEnvelopeSprites.Length > 0)
         {
             activeSprites = blueEnvelopeSprites;
+            activeIdleSpriteIndex = blueIdleSpriteIndex;
             return;
         }
 
@@ -167,10 +172,20 @@ public class Player : MonoBehaviour
             greenEnvelopeSprites != null && greenEnvelopeSprites.Length > 0)
         {
             activeSprites = greenEnvelopeSprites;
+            activeIdleSpriteIndex = greenIdleSpriteIndex;
             return;
         }
 
         activeSprites = defaultSprites != null && defaultSprites.Length > 0 ? defaultSprites : sprites;
+        activeIdleSpriteIndex = defaultIdleSpriteIndex;
+    }
+
+    private static int GetClampedIdleSpriteIndex(Sprite[] spriteSet, int idleIndex)
+    {
+        if (spriteSet == null || spriteSet.Length == 0)
+            return 0;
+
+        return Mathf.Clamp(idleIndex, 0, spriteSet.Length - 1);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -231,5 +246,8 @@ public class Player : MonoBehaviour
     {
         if (debugAutoFlapInterval < 0.05f) debugAutoFlapInterval = 0.05f;
         if (debugHoverLerpSpeed < 0f) debugHoverLerpSpeed = 0f;
+        defaultIdleSpriteIndex = Mathf.Max(0, defaultIdleSpriteIndex);
+        blueIdleSpriteIndex = Mathf.Max(0, blueIdleSpriteIndex);
+        greenIdleSpriteIndex = Mathf.Max(0, greenIdleSpriteIndex);
     }
 }
