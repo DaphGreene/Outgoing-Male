@@ -21,6 +21,7 @@ public class GameplayDebugTools : MonoBehaviour
     [SerializeField] private KeyCode applyProgressKey = KeyCode.F7;
     [SerializeField] private KeyCode toggleOverlayKey = KeyCode.F8;
     [SerializeField] private KeyCode applyScoreKey = KeyCode.F9;
+    [SerializeField] private KeyCode applyStampsKey = KeyCode.BackQuote;
 
     [Header("UI")]
     [SerializeField] private bool showOverlay = false;
@@ -39,6 +40,7 @@ public class GameplayDebugTools : MonoBehaviour
     [Header("Testing")]
     [SerializeField, Min(0.1f)] private float debugGameSpeed = 1f;
     [SerializeField, Min(0)] private int debugScore = 0;
+    [SerializeField, Min(0)] private int debugStamps = 0;
     [SerializeField, Min(0)] private int debugLap = 0;
     [SerializeField, Range(0f, 1f)] private float debugProgress = 0f;
     [SerializeField] private bool syncSongProgressMarkerToDebugProgress = false;
@@ -91,6 +93,9 @@ public class GameplayDebugTools : MonoBehaviour
 
         if (Input.GetKeyDown(applyScoreKey))
             ApplyScore();
+
+        if (Input.GetKeyDown(applyStampsKey))
+            ApplyStamps();
     }
 
     private void OnGUI()
@@ -127,14 +132,15 @@ public class GameplayDebugTools : MonoBehaviour
         y = DrawOverlayLabel(x, y, contentWidth, $"{resetProgressKey}: Reset HighScore + Stamps + PB + Found");
         y = DrawOverlayLabel(x, y, contentWidth, $"{startRunKey}: Start Run   {applySpeedKey}: Apply Speed ({debugGameSpeed:0.##}x)");
         y = DrawOverlayLabel(x, y, contentWidth, $"{applyProgressKey}: Set Lap/Bar [{debugLap + 1}, {debugProgress:P0}]");
-        y = DrawOverlayLabel(x, y, contentWidth, $"{applyScoreKey}: Set Score [{debugScore}]   {toggleOverlayKey}: Toggle Panel");
+        y = DrawOverlayLabel(x, y, contentWidth, $"{applyScoreKey}: Set Score [{debugScore}]   {applyStampsKey}: Set Stamps [{debugStamps}]");
+        y = DrawOverlayLabel(x, y, contentWidth, $"{toggleOverlayKey}: Toggle Panel");
         string markerMode = syncSongProgressMarkerToDebugProgress ? "Sync Song Marker [ON]" : "Sync Song Marker [OFF]";
         y = DrawOverlayLabel(x, y, contentWidth, markerMode);
         y = DrawOverlayLabel(x, y, contentWidth, runProgressSummary);
         y = DrawOverlayLabel(x, y, contentWidth, songProgressBestSummary);
         y = DrawOverlayLabel(x, y, contentWidth, songProgressMarkerSummary);
         y = DrawOverlayLabel(x, y, contentWidth, "Edit test values on GameplayDebugTools in Inspector.");
-        DrawOverlayLabel(x, y, contentWidth, "Note: F10 is reserved for Unity Recorder.");
+        DrawOverlayLabel(x, y, contentWidth, "Note: Stamps apply uses ` by default to avoid macOS Fn shortcuts.");
     }
 
     private void ToggleInvincible()
@@ -184,6 +190,7 @@ public class GameplayDebugTools : MonoBehaviour
         PlayerPrefs.Save();
         StampBank.SetCount(0);
         StampBank.ClearDiscoveredStamps();
+        PlayerSkinState.ResetAll();
 
         var highScoreHuds = Object.FindObjectsByType<HighScoreHud>();
         for (int i = 0; i < highScoreHuds.Length; i++)
@@ -244,6 +251,13 @@ public class GameplayDebugTools : MonoBehaviour
         Debug.Log($"DebugTools: Set score to {debugScore}.");
     }
 
+    private void ApplyStamps()
+    {
+        StampBank.SetCount(debugStamps);
+        ShowDebugToast($"Stamps: {debugStamps}");
+        Debug.Log($"DebugTools: Set stamps to {debugStamps}.");
+    }
+
     private void EnsureReferences()
     {
         if (player == null)
@@ -257,6 +271,8 @@ public class GameplayDebugTools : MonoBehaviour
             debugScore = Mathf.Max(0, debugScore);
             debugLap = Mathf.Max(0, debugLap);
         }
+
+        debugStamps = Mathf.Max(0, debugStamps);
     }
 
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)

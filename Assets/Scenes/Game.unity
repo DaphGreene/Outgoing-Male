@@ -4297,7 +4297,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -20}
   m_SizeDelta: {x: 300, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1073766604
@@ -4672,10 +4672,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sprites:
-  - {fileID: 21300000, guid: 6759879d1e4d57b4f956c4c0b363f71a, type: 3}
-  - {fileID: 21300000, guid: 78c7f0d6ae5177f41906763d6415c187, type: 3}
-  - {fileID: 21300000, guid: 46f0cec00d7c87f4cbc984102378abbf, type: 3}
-  - {fileID: 21300000, guid: 80852a1e2d755e1408caa1a43eb52af6, type: 3}
+  - {fileID: -3532856930926559990, guid: 1c9583994ee2149058d90460cbd11785, type: 3}
+  - {fileID: 2480132248314310424, guid: 1c9583994ee2149058d90460cbd11785, type: 3}
+  - {fileID: -5708827738842018271, guid: 1c9583994ee2149058d90460cbd11785, type: 3}
+  - {fileID: -1063762754169983792, guid: 1c9583994ee2149058d90460cbd11785, type: 3}
+  blueEnvelopeSprites:
+  - {fileID: -4326259744021985268, guid: 7927cb9f156af4f7bbcdb1be6dd6db42, type: 3}
+  - {fileID: 6866658422427822865, guid: 7927cb9f156af4f7bbcdb1be6dd6db42, type: 3}
+  - {fileID: 1410632160806298896, guid: 7927cb9f156af4f7bbcdb1be6dd6db42, type: 3}
+  - {fileID: -7771601180927544289, guid: 7927cb9f156af4f7bbcdb1be6dd6db42, type: 3}
+  greenEnvelopeSprites:
+  - {fileID: -7062485791595234490, guid: 12471d8d7af114ff9b5920a20f0eb934, type: 3}
+  - {fileID: 3784354389169419988, guid: 12471d8d7af114ff9b5920a20f0eb934, type: 3}
+  - {fileID: 5724053058963070290, guid: 12471d8d7af114ff9b5920a20f0eb934, type: 3}
+  - {fileID: 1196228272385539880, guid: 12471d8d7af114ff9b5920a20f0eb934, type: 3}
   gravity: -9.8
   strength: 5
   flapSoundClips:
@@ -4804,7 +4814,7 @@ SpriteRenderer:
   m_SortingLayer: 6
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 6759879d1e4d57b4f956c4c0b363f71a, type: 3}
+  m_Sprite: {fileID: -3532856930926559990, guid: 1c9583994ee2149058d90460cbd11785, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

@@ -1,19 +1,19 @@
 fileFormatVersion: 2
-guid: 7927cb9f156af4f7bbcdb1be6dd6db42
+guid: 1c9583994ee2149058d90460cbd11785
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4326259744021985268
-    second: Envelope_Blue_0
+      213: -3532856930926559990
+    second: envelope_pink_0
   - first:
-      213: 6866658422427822865
-    second: Envelope_Blue_1
+      213: 2480132248314310424
+    second: envelope_pink_1
   - first:
-      213: 1410632160806298896
-    second: Envelope_Blue_2
+      213: -5708827738842018271
+    second: envelope_pink_2
   - first:
-      213: -7771601180927544289
-    second: Envelope_Blue_3
+      213: -1063762754169983792
+    second: envelope_pink_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -122,7 +122,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Envelope_Blue_0
+      name: envelope_pink_0
       rect:
         serializedVersion: 2
         x: 0
@@ -137,14 +137,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c084f7f2fa906f3c0800000000000000
-      internalID: -4326259744021985268
+      spriteID: a0d78d5d655c8fec0800000000000000
+      internalID: -3532856930926559990
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Envelope_Blue_1
+      name: envelope_pink_1
       rect:
         serializedVersion: 2
         x: 59
@@ -159,14 +159,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 11b21ce34754b4f50800000000000000
-      internalID: 6866658422427822865
+      spriteID: 81fe3c8b3233b6220800000000000000
+      internalID: 2480132248314310424
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Envelope_Blue_2
+      name: envelope_pink_2
       rect:
         serializedVersion: 2
         x: 118
@@ -181,14 +181,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 015e995f972939310800000000000000
-      internalID: 1410632160806298896
+      spriteID: 12ecc6e0b6b26c0b0800000000000000
+      internalID: -5708827738842018271
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Envelope_Blue_3
+      name: envelope_pink_3
       rect:
         serializedVersion: 2
         x: 177
@@ -203,8 +203,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f14bec2d6e9b52490800000000000000
-      internalID: -7771601180927544289
+      spriteID: 0dc28604961cc31f0800000000000000
+      internalID: -1063762754169983792
       vertices: []
       indices: 
       edges: []
@@ -213,7 +213,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 32a443583ae124a2d9b8cf5e0fcb78fb
+    spriteID: e8cf1d6d4bbdc4796b1098f46f0de3dc
     internalID: 0
     vertices: []
     indices: 
@@ -223,12 +223,12 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":4.0,"y":1.0},"gridSpriteSize":{"x":59.0,"y":34.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":59.0,"y":34.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Envelope_Blue_0: -4326259744021985268
-      Envelope_Blue_1: 6866658422427822865
-      Envelope_Blue_2: 1410632160806298896
-      Envelope_Blue_3: -7771601180927544289
+      envelope_pink_0: -3532856930926559990
+      envelope_pink_1: 2480132248314310424
+      envelope_pink_2: -5708827738842018271
+      envelope_pink_3: -1063762754169983792
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

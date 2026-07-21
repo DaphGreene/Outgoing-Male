@@ -42,6 +42,18 @@ public static class StampBank
         OnStampCountChanged?.Invoke(cachedCount);
     }
 
+    public static bool TrySpendStamps(int amount)
+    {
+        if (amount <= 0)
+            return true;
+
+        if (Count < amount)
+            return false;
+
+        SetCount(Count - amount);
+        return true;
+    }
+
     public static void ReloadFromPlayerPrefs()
     {
         isLoaded = false;

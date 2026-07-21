@@ -6,6 +6,10 @@ public class Player : MonoBehaviour
 {
     private SpriteRenderer spriteRenderer;
     public Sprite[] sprites;
+    [SerializeField] private Sprite[] blueEnvelopeSprites;
+    [SerializeField] private Sprite[] greenEnvelopeSprites;
+    private Sprite[] defaultSprites;
+    private Sprite[] activeSprites;
     private int spriteIndex;
     private Vector3 direction;
     private Vector3 startPosition;
@@ -31,6 +35,8 @@ public class Player : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         startPosition = transform.position;
+        defaultSprites = sprites;
+        ApplySelectedSkin();
 
         if (gameManager == null)
             gameManager = Object.FindAnyObjectByType<GameManager>();
@@ -46,6 +52,7 @@ public class Player : MonoBehaviour
 
     private void OnEnable()
     {
+        ApplySelectedSkin();
         ResetState();
     }
 
@@ -54,6 +61,9 @@ public class Player : MonoBehaviour
         transform.position = startPosition;
         direction = Vector3.zero;
         debugAutoFlapTimer = 0f;
+        spriteIndex = 0;
+        if (activeSprites != null && activeSprites.Length > 0 && spriteRenderer != null)
+            spriteRenderer.sprite = activeSprites[0];
     }
 
     public void SetFrozen(bool frozen)
@@ -135,13 +145,32 @@ public class Player : MonoBehaviour
     {
         spriteIndex++;
 
-        if (sprites == null || sprites.Length == 0) return;
+        if (activeSprites == null || activeSprites.Length == 0) return;
 
-        if (spriteIndex >= sprites.Length) {
+        if (spriteIndex >= activeSprites.Length) {
             spriteIndex = 0;
         }
 
-        spriteRenderer.sprite = sprites[spriteIndex];
+        spriteRenderer.sprite = activeSprites[spriteIndex];
+    }
+
+    private void ApplySelectedSkin()
+    {
+        if (PlayerSkinState.SelectedSkinId == PlayerSkinState.BlueEnvelopeSkinId &&
+            blueEnvelopeSprites != null && blueEnvelopeSprites.Length > 0)
+        {
+            activeSprites = blueEnvelopeSprites;
+            return;
+        }
+
+        if (PlayerSkinState.SelectedSkinId == PlayerSkinState.GreenEnvelopeSkinId &&
+            greenEnvelopeSprites != null && greenEnvelopeSprites.Length > 0)
+        {
+            activeSprites = greenEnvelopeSprites;
+            return;
+        }
+
+        activeSprites = defaultSprites != null && defaultSprites.Length > 0 ? defaultSprites : sprites;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
