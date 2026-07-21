@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +8,24 @@ using UnityEngine.Serialization;
 public class GameManager : MonoBehaviour
 {
     private const string SongProgressPersonalBestKey = "SongProgressPersonalBest";
+
+    private enum ToastKind
+    {
+        PersonalBest,
+        NewStamp
+    }
+
+    private readonly struct ToastRequest
+    {
+        public ToastRequest(ToastKind kind, string message)
+        {
+            Kind = kind;
+            Message = message;
+        }
+
+        public ToastKind Kind { get; }
+        public string Message { get; }
+    }
 
     public enum GameState { Ready, Playing, GameOver }
     public GameState State { get; private set; } = GameState.Ready;
@@ -35,6 +54,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private RectTransform songProgressPersonalBestMarker;
     [SerializeField] private TMP_Text personalBestToastText;
     [SerializeField] private CanvasGroup personalBestToastCanvasGroup;
+    [SerializeField] private RectTransform sharedToastRect;
 
     [Header("Player Hits")]
     [SerializeField, Min(1)] private int startingHits = 1;
@@ -58,6 +78,25 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float personalBestToastWaveAmplitude = 6f;
     [SerializeField] private float personalBestToastWaveSpeed = 1.8f;
     [SerializeField] private float personalBestToastWaveOffsetPerCharacter = 0.45f;
+    [SerializeField] private Color personalBestToastColor = new(1f, 0.9137255f, 0.2f, 1f);
+    [SerializeField] private float personalBestToastFontSize = 42f;
+    [SerializeField] private float personalBestToastFontSizeMax = 48f;
+    [SerializeField] private Vector2 personalBestToastSize = new(480f, 64f);
+
+    [Header("Stamp Toast")]
+    [SerializeField] private float newStampToastFadeInDuration = 0.12f;
+    [SerializeField] private float newStampToastHoldDuration = 3f;
+    [SerializeField] private float newStampToastFadeOutDuration = 0.5f;
+    [SerializeField] private float newStampToastFlashSpeed = 1f;
+    [SerializeField] private float newStampToastFlashMinAlpha = 0.7f;
+    [SerializeField] private float newStampToastFlashMaxAlpha = 1f;
+    [SerializeField] private float newStampToastWaveAmplitude = 2.5f;
+    [SerializeField] private float newStampToastWaveSpeed = 1.2f;
+    [SerializeField] private float newStampToastWaveOffsetPerCharacter = 0.25f;
+    [SerializeField] private Color newStampToastColor = new(0.6509804f, 1f, 0.8f, 1f);
+    [SerializeField] private float newStampToastFontSize = 46f;
+    [SerializeField] private float newStampToastFontSizeMax = 56f;
+    [SerializeField] private Vector2 newStampToastSize = new(560f, 92f);
 
     private int score;
     public int Score => score;
@@ -70,7 +109,9 @@ public class GameManager : MonoBehaviour
     private float personalBestProgressNormalized;
     private int runStartingHighScore;
     private bool hasAnnouncedPersonalBestThisRun;
-    private float personalBestToastShownAtUnscaledTime = -999f;
+    private float activeToastShownAtUnscaledTime = -999f;
+    private readonly Queue<ToastRequest> queuedToastMessages = new();
+    private ToastKind activeToastKind = ToastKind.PersonalBest;
 
     private void Awake()
     {
@@ -94,7 +135,7 @@ public class GameManager : MonoBehaviour
         UpdateHighScoreText();
         RefreshSongProgressUi();
         RefreshSongProgressPersonalBestMarker();
-        ConfigurePersonalBestToastMotion();
+        ConfigureSharedToastMotion(ToastKind.PersonalBest);
     }
 
     private void Update()
@@ -104,7 +145,7 @@ public class GameManager : MonoBehaviour
         if (State == GameState.Playing)
             UpdateRunProgressFromMusic();
 
-        UpdatePersonalBestToast();
+        UpdateSharedToast();
 
         // Start input is only valid from the Ready state.
         if (State != GameState.Ready) return;
@@ -129,7 +170,7 @@ public class GameManager : MonoBehaviour
         OnStateChanged?.Invoke(State);
         ResetHits();
         ResetRunProgress();
-        HidePersonalBestToastImmediate();
+        HideSharedToastImmediate(true);
 
         // UI
         ConfigureGetReadyPulse();
@@ -306,6 +347,14 @@ public class GameManager : MonoBehaviour
         RefreshSongProgressPersonalBestMarker();
     }
 
+    public void ShowNewStampCollectedToast(string stampDisplayName)
+    {
+        string message = string.IsNullOrWhiteSpace(stampDisplayName)
+            ? "New stamp collected!"
+            : $"New stamp collected!\n{stampDisplayName}";
+        EnqueueToast(ToastKind.NewStamp, message);
+    }
+
     private bool ValidateRequiredReferences()
     {
         bool isValid = true;
@@ -467,19 +516,15 @@ public class GameManager : MonoBehaviour
 
     private void ShowPersonalBestToast()
     {
-        if (personalBestToastText != null)
-            personalBestToastText.text = "New Personal Best!";
-
-        personalBestToastShownAtUnscaledTime = Time.unscaledTime;
-        ConfigurePersonalBestToastMotion();
-
-        if (personalBestToastText != null && !personalBestToastText.gameObject.activeSelf)
-            personalBestToastText.gameObject.SetActive(true);
+        EnqueueToast(ToastKind.PersonalBest, "New Personal Best!");
     }
 
-    private void HidePersonalBestToastImmediate()
+    private void HideSharedToastImmediate(bool clearQueue)
     {
-        personalBestToastShownAtUnscaledTime = -999f;
+        activeToastShownAtUnscaledTime = -999f;
+
+        if (clearQueue)
+            queuedToastMessages.Clear();
 
         if (personalBestToastCanvasGroup != null)
             personalBestToastCanvasGroup.alpha = 0f;
@@ -488,12 +533,18 @@ public class GameManager : MonoBehaviour
             personalBestToastText.gameObject.SetActive(false);
     }
 
-    private void UpdatePersonalBestToast()
+    private void UpdateSharedToast()
     {
         if (personalBestToastText == null || personalBestToastCanvasGroup == null)
             return;
 
-        float elapsed = Time.unscaledTime - personalBestToastShownAtUnscaledTime;
+        if (activeToastShownAtUnscaledTime < 0f)
+        {
+            TryShowNextQueuedToast();
+            return;
+        }
+
+        float elapsed = Time.unscaledTime - activeToastShownAtUnscaledTime;
         if (elapsed < 0f)
         {
             personalBestToastCanvasGroup.alpha = 0f;
@@ -505,9 +556,9 @@ public class GameManager : MonoBehaviour
         if (!personalBestToastText.gameObject.activeSelf)
             personalBestToastText.gameObject.SetActive(true);
 
-        float fadeInEnd = personalBestToastFadeInDuration;
-        float holdEnd = fadeInEnd + personalBestToastHoldDuration;
-        float fadeOutEnd = holdEnd + personalBestToastFadeOutDuration;
+        float fadeInEnd = GetActiveToastFadeInDuration();
+        float holdEnd = fadeInEnd + GetActiveToastHoldDuration();
+        float fadeOutEnd = holdEnd + GetActiveToastFadeOutDuration();
 
         if (elapsed <= fadeInEnd && fadeInEnd > 0f)
         {
@@ -517,22 +568,23 @@ public class GameManager : MonoBehaviour
 
         if (elapsed <= holdEnd)
         {
-            float flashPhase = (Mathf.Sin((elapsed - fadeInEnd) * personalBestToastFlashSpeed * Mathf.PI * 2f) + 1f) * 0.5f;
-            personalBestToastCanvasGroup.alpha = Mathf.Lerp(personalBestToastFlashMinAlpha, personalBestToastFlashMaxAlpha, flashPhase);
+            float flashPhase = (Mathf.Sin((elapsed - fadeInEnd) * GetActiveToastFlashSpeed() * Mathf.PI * 2f) + 1f) * 0.5f;
+            personalBestToastCanvasGroup.alpha = Mathf.Lerp(GetActiveToastFlashMinAlpha(), GetActiveToastFlashMaxAlpha(), flashPhase);
             return;
         }
 
-        if (elapsed <= fadeOutEnd && personalBestToastFadeOutDuration > 0f)
+        if (elapsed <= fadeOutEnd && GetActiveToastFadeOutDuration() > 0f)
         {
             float fadeOutElapsed = elapsed - holdEnd;
-            personalBestToastCanvasGroup.alpha = 1f - Mathf.Clamp01(fadeOutElapsed / personalBestToastFadeOutDuration);
+            personalBestToastCanvasGroup.alpha = 1f - Mathf.Clamp01(fadeOutElapsed / GetActiveToastFadeOutDuration());
             return;
         }
 
-        HidePersonalBestToastImmediate();
+        HideSharedToastImmediate(false);
+        TryShowNextQueuedToast();
     }
 
-    private void ConfigurePersonalBestToastMotion()
+    private void ConfigureSharedToastMotion(ToastKind toastKind)
     {
         if (personalBestToastText == null)
             return;
@@ -541,11 +593,91 @@ public class GameManager : MonoBehaviour
         if (waveMotion == null)
             waveMotion = personalBestToastText.gameObject.AddComponent<TmpCharacterWaveMotion>();
 
-        waveMotion.SetMotion(
-            personalBestToastWaveAmplitude,
-            personalBestToastWaveSpeed,
-            personalBestToastWaveOffsetPerCharacter);
+        waveMotion.SetMotion(GetToastWaveAmplitude(toastKind), GetToastWaveSpeed(toastKind), GetToastWaveOffsetPerCharacter(toastKind));
     }
+
+    private void EnqueueToast(ToastKind toastKind, string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+            return;
+
+        queuedToastMessages.Enqueue(new ToastRequest(toastKind, message));
+        TryShowNextQueuedToast();
+    }
+
+    private void TryShowNextQueuedToast()
+    {
+        if (activeToastShownAtUnscaledTime >= 0f)
+            return;
+
+        if (personalBestToastText == null || personalBestToastCanvasGroup == null)
+            return;
+
+        if (queuedToastMessages.Count == 0)
+            return;
+
+        ToastRequest request = queuedToastMessages.Dequeue();
+        activeToastKind = request.Kind;
+        personalBestToastText.text = request.Message;
+        activeToastShownAtUnscaledTime = Time.unscaledTime;
+        ApplyToastStyle(request.Kind);
+        ConfigureSharedToastMotion(request.Kind);
+
+        if (!personalBestToastText.gameObject.activeSelf)
+            personalBestToastText.gameObject.SetActive(true);
+    }
+
+    private void ApplyToastStyle(ToastKind toastKind)
+    {
+        if (personalBestToastText != null)
+        {
+            personalBestToastText.color = GetToastColor(toastKind);
+            personalBestToastText.fontSize = GetToastFontSize(toastKind);
+            personalBestToastText.fontSizeMax = GetToastFontSizeMax(toastKind);
+        }
+
+        if (sharedToastRect != null)
+            sharedToastRect.sizeDelta = GetToastSize(toastKind);
+    }
+
+    private float GetActiveToastFadeInDuration() =>
+        activeToastKind == ToastKind.PersonalBest ? personalBestToastFadeInDuration : newStampToastFadeInDuration;
+
+    private float GetActiveToastHoldDuration() =>
+        activeToastKind == ToastKind.PersonalBest ? personalBestToastHoldDuration : newStampToastHoldDuration;
+
+    private float GetActiveToastFadeOutDuration() =>
+        activeToastKind == ToastKind.PersonalBest ? personalBestToastFadeOutDuration : newStampToastFadeOutDuration;
+
+    private float GetActiveToastFlashSpeed() =>
+        activeToastKind == ToastKind.PersonalBest ? personalBestToastFlashSpeed : newStampToastFlashSpeed;
+
+    private float GetActiveToastFlashMinAlpha() =>
+        activeToastKind == ToastKind.PersonalBest ? personalBestToastFlashMinAlpha : newStampToastFlashMinAlpha;
+
+    private float GetActiveToastFlashMaxAlpha() =>
+        activeToastKind == ToastKind.PersonalBest ? personalBestToastFlashMaxAlpha : newStampToastFlashMaxAlpha;
+
+    private float GetToastWaveAmplitude(ToastKind toastKind) =>
+        toastKind == ToastKind.PersonalBest ? personalBestToastWaveAmplitude : newStampToastWaveAmplitude;
+
+    private float GetToastWaveSpeed(ToastKind toastKind) =>
+        toastKind == ToastKind.PersonalBest ? personalBestToastWaveSpeed : newStampToastWaveSpeed;
+
+    private float GetToastWaveOffsetPerCharacter(ToastKind toastKind) =>
+        toastKind == ToastKind.PersonalBest ? personalBestToastWaveOffsetPerCharacter : newStampToastWaveOffsetPerCharacter;
+
+    private Color GetToastColor(ToastKind toastKind) =>
+        toastKind == ToastKind.PersonalBest ? personalBestToastColor : newStampToastColor;
+
+    private float GetToastFontSize(ToastKind toastKind) =>
+        toastKind == ToastKind.PersonalBest ? personalBestToastFontSize : newStampToastFontSize;
+
+    private float GetToastFontSizeMax(ToastKind toastKind) =>
+        toastKind == ToastKind.PersonalBest ? personalBestToastFontSizeMax : newStampToastFontSizeMax;
+
+    private Vector2 GetToastSize(ToastKind toastKind) =>
+        toastKind == ToastKind.PersonalBest ? personalBestToastSize : newStampToastSize;
 
     private static bool HasTapStartedThisFrame()
     {

@@ -131,6 +131,9 @@ public class StampPickup : MonoBehaviour
         if (fallbackStampValue > 0)
             StampBank.AddStamps(fallbackStampValue);
 
+        if (stampDefinition != null && StampBank.RegisterStampDiscovery(stampDefinition.StampId) && gameManager != null)
+            gameManager.ShowNewStampCollectedToast(stampDefinition.DisplayName);
+
         if (collectSoundClip != null && SoundFXManager.Instance != null)
             SoundFXManager.Instance.PlaySoundFXClip(collectSoundClip, transform);
 
