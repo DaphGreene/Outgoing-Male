@@ -16,6 +16,7 @@ public class SoundMixerManager : MonoBehaviour
     private const string MasterKey = "Volume_Master";
     private const string MusicKey = "Volume_Music";
     private const string SfxKey   = "Volume_SFX";
+    private const float DefaultVolumeLinear = 0.5f;
 
     private void Awake()
     {
@@ -33,9 +34,9 @@ public class SoundMixerManager : MonoBehaviour
         ApplySavedVolumes();
     }
 
-    public float GetMasterLinear() => PlayerPrefs.GetFloat(MasterKey, 1f);
-    public float GetMusicLinear()  => PlayerPrefs.GetFloat(MusicKey, 1f);
-    public float GetSfxLinear()    => PlayerPrefs.GetFloat(SfxKey, 1f);
+    public float GetMasterLinear() => PlayerPrefs.GetFloat(MasterKey, DefaultVolumeLinear);
+    public float GetMusicLinear()  => PlayerPrefs.GetFloat(MusicKey, DefaultVolumeLinear);
+    public float GetSfxLinear()    => PlayerPrefs.GetFloat(SfxKey, DefaultVolumeLinear);
 
     public void SetMasterLinear(float value01)
     {

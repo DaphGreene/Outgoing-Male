@@ -332,7 +332,10 @@ public class GameManager : MonoBehaviour
         if (!IsPlaying) return;
 
         if (runMusicSource != null && runMusicSource.isPlaying)
+        {
             runMusicSource.Pause();
+            previousRunMusicTimeSeconds = runMusicSource.time;
+        }
 
         if (MenuMusicPlayer.Instance != null)
             MenuMusicPlayer.Instance.ResumeMenuMusic();
@@ -347,7 +350,10 @@ public class GameManager : MonoBehaviour
             MenuMusicPlayer.Instance.PauseMenuMusic();
 
         if (runMusicSource != null)
+        {
+            previousRunMusicTimeSeconds = runMusicSource.time;
             runMusicSource.UnPause();
+        }
     }
 
     public void IncreaseScore(int amount = 1)
@@ -619,6 +625,9 @@ public class GameManager : MonoBehaviour
     private void UpdateRunProgressFromMusic()
     {
         if (runMusicSource == null || runMusicSource.clip == null)
+            return;
+
+        if (!runMusicSource.isPlaying)
             return;
 
         float currentMusicTimeSeconds = runMusicSource.time;

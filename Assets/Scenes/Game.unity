@@ -764,6 +764,7 @@ GameObject:
   - component: {fileID: 164107778}
   - component: {fileID: 164107779}
   - component: {fileID: 164107780}
+  - component: {fileID: 164107781}
   m_Layer: 0
   m_Name: SFXVolumeSlider
   m_TagString: Untagged
@@ -858,6 +859,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SliderSfxPreview
   previewSource: {fileID: 1259592146}
   previewClip: {fileID: 8300000, guid: 85bdffede039f46f981b27e0175dad63, type: 3}
+--- !u!114 &164107781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 164107777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81a918392f9e4ff1a5fbd39d71fb96d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mobileAspectThreshold: 0.75
+  extraHeight: 16
+  previewInEditor: 0
 --- !u!1 &165927475
 GameObject:
   m_ObjectHideFlags: 0
@@ -2371,6 +2387,7 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
+  - component: {fileID: 519420030}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2386,6 +2403,22 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
+--- !u!114 &519420030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e67f547ecda47f5a2d5e5173e25838c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  desktopOrthographicSize: 4
+  mobileOrthographicSize: 5.25
+  desktopAspectRatio: 1.7777778
+  mobileAspectRatio: 0.5625
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -2421,7 +2454,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 4
+  orthographic size: 5.25
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -2943,6 +2976,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 587452464}
+  - component: {fileID: 587452465}
   m_Layer: 0
   m_Name: _Gameplay
   m_TagString: Untagged
@@ -2968,6 +3002,36 @@ Transform:
   - {fileID: 375629879}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &587452465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 587452463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb4f70849a4492681c4022ed0de6ad8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mobileAspectThreshold: 0.75
+  previewInEditor: 0
+  player:
+    target: {fileID: 1206252344}
+    localPositionOffset: {x: -1.5, y: 0, z: 0}
+    localScaleMultiplier: {x: 0.75, y: 0.85, z: 1}
+  backgroundGroup:
+    target: {fileID: 1897120695}
+    localPositionOffset: {x: 0, y: 0.8, z: 0}
+    localScaleMultiplier: {x: 1, y: 1.12, z: 1}
+  frontCloudGroup:
+    target: {fileID: 2095311805}
+    localPositionOffset: {x: 0, y: 0.85, z: 0}
+    localScaleMultiplier: {x: 1, y: 1.12, z: 1}
+  groundGroup:
+    target: {fileID: 1773906169}
+    localPositionOffset: {x: 0, y: -0.35, z: 0}
+    localScaleMultiplier: {x: 1, y: 1, z: 1}
 --- !u!1 &617017255
 GameObject:
   m_ObjectHideFlags: 0
@@ -3361,6 +3425,7 @@ GameObject:
   m_Component:
   - component: {fileID: 702691659}
   - component: {fileID: 702691660}
+  - component: {fileID: 702691661}
   m_Layer: 0
   m_Name: MusicVolumeSlider
   m_TagString: Untagged
@@ -3441,6 +3506,21 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &702691661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 702691658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81a918392f9e4ff1a5fbd39d71fb96d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mobileAspectThreshold: 0.75
+  extraHeight: 16
+  previewInEditor: 0
 --- !u!1 &722966984
 GameObject:
   m_ObjectHideFlags: 0
@@ -4686,6 +4766,9 @@ MonoBehaviour:
   - {fileID: 3784354389169419988, guid: 12471d8d7af114ff9b5920a20f0eb934, type: 3}
   - {fileID: 5724053058963070290, guid: 12471d8d7af114ff9b5920a20f0eb934, type: 3}
   - {fileID: 1196228272385539880, guid: 12471d8d7af114ff9b5920a20f0eb934, type: 3}
+  defaultIdleSpriteIndex: 0
+  blueIdleSpriteIndex: 0
+  greenIdleSpriteIndex: 0
   gravity: -9.8
   strength: 5
   flapSoundClips:
@@ -4814,7 +4897,8 @@ SpriteRenderer:
   m_SortingLayer: 6
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -3532856930926559990, guid: 1c9583994ee2149058d90460cbd11785, type: 3}
+  m_Sprite: {fileID: -3532856930926559990, guid: 1c9583994ee2149058d90460cbd11785,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -6087,6 +6171,7 @@ GameObject:
   - component: {fileID: 1493959111}
   - component: {fileID: 1493959110}
   - component: {fileID: 1493959109}
+  - component: {fileID: 1493959113}
   m_Layer: 5
   m_Name: GameHUDCanvas
   m_TagString: Untagged
@@ -6187,6 +6272,55 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1493959113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1493959108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e1cf1c2a91443fe88c6e1db7a03d114, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mobileAspectThreshold: 0.75
+  previewInEditor: 0
+  songProgressBar:
+    target: {fileID: 1911010001}
+    anchoredPositionOffset: {x: 0, y: 80}
+    sizeDeltaOffset: {x: -100, y: 12}
+    localScaleMultiplier: {x: 1, y: 1, z: 1}
+  lapCounter:
+    target: {fileID: 1911060001}
+    anchoredPositionOffset: {x: 50, y: 80}
+    sizeDeltaOffset: {x: 0, y: 0}
+    localScaleMultiplier: {x: 1, y: 1, z: 1}
+  songProgressPercent:
+    target: {fileID: 1911090001}
+    anchoredPositionOffset: {x: 0, y: 0}
+    sizeDeltaOffset: {x: 8, y: 0}
+    localScaleMultiplier: {x: 1, y: 1, z: 1}
+  getReady:
+    target: {fileID: 896918963}
+    anchoredPositionOffset: {x: 0, y: 60}
+    sizeDeltaOffset: {x: 0, y: 0}
+    localScaleMultiplier: {x: 1, y: 1, z: 1}
+  startPrompt:
+    target: {fileID: 2101122812}
+    anchoredPositionOffset: {x: 0, y: 20}
+    sizeDeltaOffset: {x: 0, y: 0}
+    localScaleMultiplier: {x: 1, y: 1, z: 1}
+  getReadyText:
+    target: {fileID: 896918964}
+    fontSizeOffset: 0
+    fontSizeMinOffset: 0
+    fontSizeMaxOffset: 0
+  startPromptText:
+    target: {fileID: 2101122813}
+    fontSizeOffset: 0
+    fontSizeMinOffset: 0
+    fontSizeMaxOffset: 0
 --- !u!1 &1502965277
 GameObject:
   m_ObjectHideFlags: 0
@@ -7946,6 +8080,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1868644414}
   - component: {fileID: 1868644415}
+  - component: {fileID: 1868644416}
   m_Layer: 0
   m_Name: MasterVolumeSlider
   m_TagString: Untagged
@@ -8038,6 +8173,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1868644416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1868644413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81a918392f9e4ff1a5fbd39d71fb96d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mobileAspectThreshold: 0.75
+  extraHeight: 16
+  previewInEditor: 0
 --- !u!1 &1897120694
 GameObject:
   m_ObjectHideFlags: 0

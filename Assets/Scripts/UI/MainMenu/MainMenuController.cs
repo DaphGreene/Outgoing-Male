@@ -53,6 +53,9 @@ public class MainMenuController : MonoBehaviour
         mainMenuPanel.SetActive(true);
         optionsPanel.SetActive(false);
         characterSelectPanel.SetActive(false);
+
+        if (MenuMusicPlayer.Instance != null)
+            MenuMusicPlayer.Instance.ResumeMenuMusic();
     }
 
     private System.Collections.IEnumerator RebuildCharacterSelectLayout()

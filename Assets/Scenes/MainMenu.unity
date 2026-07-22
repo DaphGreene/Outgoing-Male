@@ -1028,6 +1028,7 @@ GameObject:
   m_Component:
   - component: {fileID: 146920724}
   - component: {fileID: 146920725}
+  - component: {fileID: 146920726}
   m_Layer: 0
   m_Name: MusicVolumeSlider
   m_TagString: Untagged
@@ -1103,6 +1104,20 @@ MonoBehaviour:
   m_Direction: 0
   m_MinValue: 0.0001
   m_MaxValue: 1
+--- !u!114 &146920726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 146920723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81a918392f9e4ff1a5fbd39d71fb96d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mobileAspectThreshold: 0.75
+  extraHeight: 16
   m_WholeNumbers: 0
   m_Value: 0.0001
   m_OnValueChanged:
@@ -2625,6 +2640,7 @@ GameObject:
   m_Component:
   - component: {fileID: 742349028}
   - component: {fileID: 742349029}
+  - component: {fileID: 742349030}
   m_Layer: 0
   m_Name: MasterVolumeSlider
   m_TagString: Untagged
@@ -2705,6 +2721,20 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &742349030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 742349027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81a918392f9e4ff1a5fbd39d71fb96d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mobileAspectThreshold: 0.75
+  extraHeight: 16
 --- !u!1 &773507764
 GameObject:
   m_ObjectHideFlags: 0
@@ -2807,6 +2837,7 @@ GameObject:
   - component: {fileID: 800627062}
   - component: {fileID: 800627063}
   - component: {fileID: 800627064}
+  - component: {fileID: 800627065}
   m_Layer: 0
   m_Name: SFXVolumeSlider
   m_TagString: Untagged
@@ -2901,6 +2932,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SliderSfxPreview
   previewSource: {fileID: 1830732103}
   previewClip: {fileID: 8300000, guid: 85bdffede039f46f981b27e0175dad63, type: 3}
+--- !u!114 &800627065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 800627061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81a918392f9e4ff1a5fbd39d71fb96d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mobileAspectThreshold: 0.75
+  extraHeight: 16
 --- !u!1 &806420079
 GameObject:
   m_ObjectHideFlags: 0
@@ -4071,7 +4116,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 82.61, y: -18.185}
-  m_SizeDelta: {x: 165.22, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1061589811
 MonoBehaviour:
