@@ -2454,7 +2454,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5.25
+  orthographic size: 4
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -4770,7 +4770,7 @@ MonoBehaviour:
   blueIdleSpriteIndex: 0
   greenIdleSpriteIndex: 0
   gravity: -9.8
-  strength: 5
+  strength: 4
   flapSoundClips:
   - {fileID: 8300000, guid: d1b266f12c81a4d829f779cee2714f1e, type: 3}
   - {fileID: 8300000, guid: 8aa58321c21984cc49a6cc6750b9a2e4, type: 3}
